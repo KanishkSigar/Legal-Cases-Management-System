@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import (
@@ -16,6 +18,54 @@ from .mixins import AdminRequiredMixin
 from .models import ClientProfile, LawyerProfile
 
 
+# --- Public ----------------------------------------------------------------
+class LandingView(TemplateView):
+    """Public marketing / landing page. No authentication required."""
+
+    template_name = 'landing.html'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('dashboard')
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['lawyer_count'] = LawyerProfile.objects.count()
+        ctx['featured_lawyers'] = LawyerProfile.objects.select_related('user')[:3]
+        return ctx
+
+
+# --- Authentication --------------------------------------------------------
+class PortalLoginView(LoginView):
+    """Client / lawyer sign-in. Admins are redirected to the staff portal."""
+
+    template_name = 'accounts/login_portal.html'
+    redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        user = form.get_user()
+        if user.is_admin:
+            form.add_error(None, 'Administrators must sign in through the staff portal.')
+            return self.form_invalid(form)
+        return super().form_valid(form)
+
+
+class AdminLoginView(LoginView):
+    """Separate, unadvertised credential window for administrators."""
+
+    template_name = 'accounts/login_admin.html'
+    redirect_authenticated_user = True
+
+    def form_valid(self, form):
+        user = form.get_user()
+        if not user.is_admin:
+            form.add_error(None, 'This portal is for administrators only.')
+            return self.form_invalid(form)
+        return super().form_valid(form)
+
+
+# --- Dashboard -------------------------------------------------------------
 class DashboardView(LoginRequiredMixin, TemplateView):
     """Role-aware landing page with counts and recent activity."""
 
@@ -43,7 +93,18 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         return ctx
 
 
-# --- Lawyers ---------------------------------------------------------------
+class LawyerDirectoryView(LoginRequiredMixin, ListView):
+    """Read-only 'our lawyers' directory visible to every signed-in user."""
+
+    model = LawyerProfile
+    template_name = 'accounts/lawyer_directory.html'
+    context_object_name = 'lawyers'
+
+    def get_queryset(self):
+        return LawyerProfile.objects.select_related('user')
+
+
+# --- Lawyers (admin management) --------------------------------------------
 class LawyerListView(AdminRequiredMixin, ListView):
     model = LawyerProfile
     template_name = 'accounts/lawyer_list.html'
@@ -100,7 +161,7 @@ class LawyerDeleteView(AdminRequiredMixin, DeleteView):
         return response
 
 
-# --- Clients ---------------------------------------------------------------
+# --- Clients (admin management) --------------------------------------------
 class ClientListView(AdminRequiredMixin, ListView):
     model = ClientProfile
     template_name = 'accounts/client_list.html'

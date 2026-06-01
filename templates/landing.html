@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Legal CMS — Case Management for Modern Law Firms{% endblock %}
+
+{% block body %}
+<div class="landing">
+
+  <!-- Top bar -->
+  <header class="landing-nav">
+    <a class="landing-brand" href="#top"><i class="bi bi-bank2"></i> Legal<span>CMS</span></a>
+    <nav class="landing-links">
+      <a href="#features">Features</a>
+      <a href="#schema">Database</a>
+      <a href="#lawyers">Lawyers</a>
+      <a href="{% url 'login' %}" class="btn-pill">Client / Lawyer Login</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="top">
+    <div class="hero-inner">
+      <span class="eyebrow">Law firm operations, organised</span>
+      <h1>Manage cases, clients &amp; appointments<br>from a single source of truth.</h1>
+      <p class="lead">A role-based case management system built on a relational
+        MySQL core — every case, hearing and appointment connected by design.</p>
+      <div class="hero-cta">
+        <a href="{% url 'login' %}" class="btn-primary-xl">Enter the portal <i class="bi bi-arrow-right"></i></a>
+        <a href="#schema" class="btn-ghost-xl">See the data model</a>
+      </div>
+      <div class="hero-stats">
+        <div><strong data-count="3">0</strong><span>connected roles</span></div>
+        <div><strong data-count="5">0</strong><span>core tables</span></div>
+        <div><strong data-count="{{ lawyer_count }}">0</strong><span>lawyers on file</span></div>
+      </div>
+    </div>
+    <div class="hero-card-wrap">
+      <div class="float-card glass">
+        <div class="fc-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span> case · CASE-2026-014</div>
+        <div class="fc-row"><span>Status</span><b class="pill pill-blue">In Progress</b></div>
+        <div class="fc-row"><span>Client</span><b>R. Mehta</b></div>
+        <div class="fc-row"><span>Lawyer</span><b>A. Sharma</b></div>
+        <div class="fc-row"><span>Next hearing</span><b>12 Jun, 10:30</b></div>
+        <div class="fc-bar"><i style="width:62%"></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="section" id="features">
+    <h2 class="section-title">Everything a firm tracks, in one place</h2>
+    <p class="section-sub">Three roles, each with a tailored view — enforced at the database query level.</p>
+    <div class="feature-grid">
+      <div class="feature">
+        <div class="ft-icon"><i class="bi bi-folder2-open"></i></div>
+        <h3>Case management</h3>
+        <p>Case numbers, types and a full status workflow (Open → Won/Lost), with a notes timeline on every case.</p>
+      </div>
+      <div class="feature">
+        <div class="ft-icon"><i class="bi bi-calendar2-check"></i></div>
+        <h3>Appointments</h3>
+        <p>Schedule meetings between lawyers and clients, optionally tied to a case, with one-click complete / cancel.</p>
+      </div>
+      <div class="feature">
+        <div class="ft-icon"><i class="bi bi-people"></i></div>
+        <h3>Lawyers &amp; clients</h3>
+        <p>Full profiles — specialisation, bar number, contact details — each linked to a secure login account.</p>
+      </div>
+      <div class="feature">
+        <div class="ft-icon"><i class="bi bi-shield-lock"></i></div>
+        <h3>Role-based access</h3>
+        <p>Admins see all; lawyers see only their cases; clients see only their own — scoped in the ORM, not just the UI.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Schema highlight -->
+  <section class="section section-dark" id="schema">
+    <h2 class="section-title">Built around a relational core</h2>
+    <p class="section-sub">The whole system is a handful of well-normalised tables. Foreign keys keep every record consistent.</p>
+    <div class="schema-wrap">
+      <pre class="schema-er">
+ ┌──────────────┐        ┌───────────────┐        ┌──────────────┐
+ │   User       │ 1    1 │ LawyerProfile │ 1     * │    Case      │
+ │  (accounts)  ├────────┤  specialism   ├────────┤  case_number │
+ │  role, phone │        │  bar_number   │        │  status,type │
+ └──────┬───────┘        └───────────────┘        └──────┬───────┘
+        │ 1            1 ┌───────────────┐                │ 1
+        └────────────────┤ ClientProfile ├── * ───────────┘
+                         │  company,addr │                │ *
+                         └───────┬───────┘         ┌───────┴───────┐
+                                 │ *               │   CaseNote    │
+                         ┌───────┴───────┐         │  author, text │
+                         │  Appointment  │         └───────────────┘
+                         │  scheduled_for│
+                         │  status, case │
+                         └───────────────┘
+      </pre>
+      <div class="schema-points">
+        <div class="sp"><b>Custom User + role</b><span>One auth table extended with a <code>role</code> column drives every permission.</span></div>
+        <div class="sp"><b>Profiles via 1-to-1</b><span><code>LawyerProfile</code> / <code>ClientProfile</code> keep domain data out of auth.</span></div>
+        <div class="sp"><b>Protected foreign keys</b><span>Cases reference client &amp; lawyer with <code>on_delete=PROTECT</code> — no orphaned records.</span></div>
+        <div class="sp"><b>Query-level scoping</b><span>A <code>for_user()</code> manager method filters rows by role at the SQL layer.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lawyers -->
+  {% if featured_lawyers %}
+  <section class="section" id="lawyers">
+    <h2 class="section-title">Our lawyers</h2>
+    <div class="lawyer-row">
+      {% for lawyer in featured_lawyers %}
+        <div class="lawyer-chip">
+          <div class="avatar">{{ lawyer.user.first_name|first|default:"L" }}</div>
+          <div>
+            <b>{{ lawyer.user.get_full_name }}</b>
+            <span>{{ lawyer.specialization|default:"General practice" }}</span>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <!-- CTA -->
+  <section class="cta-band">
+    <h2>Ready to get organised?</h2>
+    <a href="{% url 'login' %}" class="btn-primary-xl">Sign in to the portal <i class="bi bi-arrow-right"></i></a>
+  </section>
+
+  <!-- Footer -->
+  <footer class="landing-footer">
+    <div>© <span id="yr"></span> Legal Cases Management System</div>
+    <div class="foot-links">
+      <a href="https://github.com/KanishkSigar/Legal-Cases-Management-System" target="_blank" rel="noopener">GitHub</a>
+      <a href="{% url 'admin_login' %}" class="staff-link">Staff portal</a>
+    </div>
+  </footer>
+</div>
+
+<script>
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  // Animated stat counters
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, target = +el.dataset.count;
+      let n = 0; const step = Math.max(1, Math.ceil(target / 30));
+      const t = setInterval(() => { n += step; if (n >= target) { n = target; clearInterval(t); } el.textContent = n; }, 30);
+      obs.unobserve(el);
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('[data-count]').forEach(el => obs.observe(el));
+</script>
+{% endblock %}

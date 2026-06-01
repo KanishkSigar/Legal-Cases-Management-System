@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Staff portal — Legal CMS{% endblock %}
+{% block content %}
+<div class="auth-screen auth-screen--dark">
+  <div class="auth-card auth-card--dark">
+    <div class="auth-badge"><i class="bi bi-shield-lock"></i></div>
+    <h4>Administrator access</h4>
+    <p class="auth-sub">Restricted. Authorised staff only.</p>
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger py-2">{{ form.non_field_errors|join:" " }}</div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      {{ form|crispy }}
+      <button type="submit" class="btn btn-warning w-100 mt-2 fw-semibold">Sign in to admin</button>
+    </form>
+    <div class="auth-foot">
+      <a href="{% url 'landing' %}" class="text-light">← Back to home</a>
+      <a href="{% url 'login' %}" class="text-light-50">Client login</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -29,6 +29,16 @@ SECRET_KEY = env('SECRET_KEY', default='django-insecure-dev-only-change-me')
 DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
+# On Vercel the deploy URL is injected as VERCEL_URL (host only, no scheme).
+VERCEL_URL = env('VERCEL_URL', default='')
+if VERCEL_URL:
+    ALLOWED_HOSTS.append(VERCEL_URL)
+    ALLOWED_HOSTS.append('.vercel.app')
+
+# Extra hosts / CSRF trusted origins can be supplied via env for custom domains.
+ALLOWED_HOSTS += env.list('EXTRA_ALLOWED_HOSTS', default=[])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=['https://*.vercel.app'])
+
 
 # --- Applications ----------------------------------------------------------
 INSTALLED_APPS = [
@@ -51,6 +61,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    # WhiteNoise serves static files in production (Vercel has no static server).
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -80,8 +92,25 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # --- Database --------------------------------------------------------------
-# Default to MySQL; allow a zero-config SQLite fallback via DB_ENGINE=sqlite.
-if env('DB_ENGINE') == 'sqlite':
+# Three ways to configure the database, in priority order:
+#   1. DATABASE_URL  — a single connection string (used in production / Vercel),
+#                      e.g. mysql://user:pass@host:3306/legal_cms
+#   2. DB_ENGINE=sqlite  — zero-config local fallback (no server needed)
+#   3. DB_* variables    — explicit MySQL host/user/password (local MySQL)
+DATABASE_URL = env('DATABASE_URL', default='')
+
+if DATABASE_URL:
+    import dj_database_url
+
+    DATABASES = {
+        'default': dj_database_url.parse(
+            DATABASE_URL, conn_max_age=600, ssl_require=env.bool('DB_SSL_REQUIRE', default=False),
+        )
+    }
+    DATABASES['default'].setdefault('OPTIONS', {})
+    if DATABASES['default'].get('ENGINE', '').endswith('mysql'):
+        DATABASES['default']['OPTIONS']['charset'] = 'utf8mb4'
+elif env('DB_ENGINE') == 'sqlite':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -120,7 +149,7 @@ AUTH_USER_MODEL = 'accounts.User'
 
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'landing'
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
@@ -142,7 +171,27 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# WhiteNoise compressed static files. Non-manifest storage is used on purpose:
+# on Vercel the files are collected in a separate build container, so a runtime
+# manifest wouldn't be present in the Python lambda. Plain names keep {% static %}
+# resolvable everywhere (WhiteNoise locally, Vercel's static route in production).
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
+}
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# --- Production hardening (only when DEBUG is off) --------------------------
+if not DEBUG:
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = env.bool('SECURE_SSL_REDIRECT', default=True)
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = 31536000  # 1 year
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
 
 # --- Crispy forms ----------------------------------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
