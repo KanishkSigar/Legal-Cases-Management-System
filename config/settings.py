@@ -30,9 +30,12 @@ DEBUG = env('DEBUG')
 ALLOWED_HOSTS = env('ALLOWED_HOSTS')
 
 # On Vercel the deploy URL is injected as VERCEL_URL (host only, no scheme).
+# Allow any *.vercel.app host in production so the deployment always responds,
+# regardless of whether VERCEL_URL is present at runtime.
 VERCEL_URL = env('VERCEL_URL', default='')
 if VERCEL_URL:
     ALLOWED_HOSTS.append(VERCEL_URL)
+if VERCEL_URL or not DEBUG:
     ALLOWED_HOSTS.append('.vercel.app')
 
 # Extra hosts / CSRF trusted origins can be supplied via env for custom domains.
