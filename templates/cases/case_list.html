@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}Cases — Legal CMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Cases</h3>
+  {% if user.is_admin or user.is_lawyer %}
+    <a href="{% url 'case_add' %}" class="btn btn-dark"><i class="bi bi-plus-lg"></i> New case</a>
+  {% endif %}
+</div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto">
+    <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+      <option value="">All statuses</option>
+      {% for value, label in statuses %}
+        <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="col-auto">
+    <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
+      <option value="">All types</option>
+      {% for value, label in types %}
+        <option value="{{ value }}" {% if value == current_type %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% if current_status or current_type %}
+    <div class="col-auto"><a href="{% url 'case_list' %}" class="btn btn-sm btn-outline-secondary">Clear</a></div>
+  {% endif %}
+</form>
+
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th>Case #</th><th>Title</th><th>Type</th><th>Client</th><th>Lawyer</th>
+          <th>Status</th><th>Opened</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for case in cases %}
+          <tr role="button" onclick="window.location='{% url 'case_detail' case.pk %}'">
+            <td><strong>{{ case.case_number }}</strong></td>
+            <td>{{ case.title }}</td>
+            <td>{{ case.get_case_type_display }}</td>
+            <td>{{ case.client.user.get_full_name }}</td>
+            <td>{{ case.lawyer.user.get_full_name }}</td>
+            <td><span class="badge bg-{{ case.status_badge }}">{{ case.get_status_display }}</span></td>
+            <td>{{ case.opened_date|date:"M d, Y" }}</td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="7" class="text-center text-muted py-4">No cases found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% include 'partials/pagination.html' %}
+{% endblock %}

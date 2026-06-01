@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Delete appointment — Legal CMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card border-danger"><div class="card-body">
+      <h4 class="text-danger">Delete appointment</h4>
+      <p>Delete <strong>{{ appointment.title }}</strong> on
+         {{ appointment.scheduled_for|date:"M d, Y H:i" }}? This cannot be undone.</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'appointment_detail' appointment.pk %}" class="btn btn-outline-secondary">Cancel</a>
+      </form>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

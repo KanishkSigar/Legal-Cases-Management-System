@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Delete case — Legal CMS{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-6">
+    <div class="card border-danger"><div class="card-body">
+      <h4 class="text-danger">Delete case</h4>
+      <p>Are you sure you want to delete <strong>{{ case.case_number }} — {{ case.title }}</strong>?
+         This cannot be undone.</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Delete</button>
+        <a href="{% url 'case_detail' case.pk %}" class="btn btn-outline-secondary">Cancel</a>
+      </form>
+    </div></div>
+  </div>
+</div>
+{% endblock %}

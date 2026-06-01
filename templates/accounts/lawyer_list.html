@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Lawyers — Legal CMS{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Lawyers</h3>
+  <a href="{% url 'lawyer_add' %}" class="btn btn-dark"><i class="bi bi-plus-lg"></i> Add lawyer</a>
+</div>
+<div class="card">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light"><tr><th>Name</th><th>Specialization</th><th>Bar #</th><th>Email</th><th></th></tr></thead>
+      <tbody>
+        {% for lawyer in lawyers %}
+          <tr>
+            <td><a href="{% url 'lawyer_detail' lawyer.pk %}">{{ lawyer.user.get_full_name }}</a></td>
+            <td>{{ lawyer.specialization|default:"—" }}</td>
+            <td>{{ lawyer.bar_number|default:"—" }}</td>
+            <td>{{ lawyer.user.email|default:"—" }}</td>
+            <td class="text-end">
+              <a href="{% url 'lawyer_edit' lawyer.pk %}" class="btn btn-sm btn-outline-dark"><i class="bi bi-pencil"></i></a>
+              <a href="{% url 'lawyer_delete' lawyer.pk %}" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></a>
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-center text-muted py-4">No lawyers yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
