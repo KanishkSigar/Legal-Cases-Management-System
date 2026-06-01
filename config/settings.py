@@ -102,14 +102,27 @@ DATABASE_URL = env('DATABASE_URL', default='')
 if DATABASE_URL:
     import dj_database_url
 
-    DATABASES = {
-        'default': dj_database_url.parse(
-            DATABASE_URL, conn_max_age=600, ssl_require=env.bool('DB_SSL_REQUIRE', default=False),
-        )
-    }
-    DATABASES['default'].setdefault('OPTIONS', {})
-    if DATABASES['default'].get('ENGINE', '').endswith('mysql'):
-        DATABASES['default']['OPTIONS']['charset'] = 'utf8mb4'
+    DATABASES = {'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
+    _default = DATABASES['default']
+
+    if _default.get('ENGINE', '').endswith('mysql'):
+        # Rebuild OPTIONS cleanly (drop any stray ?ssl-mode=... query param that
+        # dj-database-url leaves behind, which PyMySQL doesn't understand).
+        options = {'charset': 'utf8mb4'}
+        if env.bool('DB_SSL_REQUIRE', default=False):
+            import ssl as _ssl
+
+            ssl_ctx = _ssl.create_default_context()
+            ca = env('DB_SSL_CA', default='')
+            if ca:
+                ssl_ctx.load_verify_locations(ca)  # verify against provider CA
+            else:
+                # Managed MySQL (e.g. Aiven) uses a private CA. Encrypt the
+                # connection but skip CA verification when no CA file is given.
+                ssl_ctx.check_hostname = False
+                ssl_ctx.verify_mode = _ssl.CERT_NONE
+            options['ssl'] = ssl_ctx
+        _default['OPTIONS'] = options
 elif env('DB_ENGINE') == 'sqlite':
     DATABASES = {
         'default': {
