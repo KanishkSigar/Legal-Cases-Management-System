@@ -46,6 +46,25 @@ def setup_view(request):
         return HttpResponseForbidden('Missing or invalid ?token=.')
 
     out = io.StringIO()
+
+    # Safe diagnostics: /setup/?debug=1 shows the effective DB config the server
+    # is using (never the password value — only its length), so we can tell
+    # whether the right credentials are actually in effect.
+    if request.GET.get('debug'):
+        from django.conf import settings as _s
+        db = _s.DATABASES['default']
+        out.write('== effective DB config (no secrets) ==\n')
+        out.write(f"ENGINE        : {db.get('ENGINE')}\n")
+        out.write(f"HOST          : {db.get('HOST')}\n")
+        out.write(f"PORT          : {db.get('PORT')}\n")
+        out.write(f"NAME          : {db.get('NAME')}\n")
+        out.write(f"USER          : {db.get('USER')}\n")
+        out.write(f"PASSWORD len  : {len(str(db.get('PASSWORD') or ''))}\n")
+        out.write(f"SSL enabled   : {'ssl' in db.get('OPTIONS', {})}\n")
+        out.write(f"DATABASE_URL set in env : {bool(os.environ.get('DATABASE_URL'))}\n")
+        out.write(f"DB_PASSWORD set in env  : {bool(os.environ.get('DB_PASSWORD'))}\n")
+        return HttpResponse(_wrap(out.getvalue()), content_type='text/html')
+
     out.write('== migrate ==\n')
     try:
         call_command('migrate', '--noinput', stdout=out, stderr=out)
