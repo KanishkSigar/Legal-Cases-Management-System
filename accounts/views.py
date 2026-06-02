@@ -1,9 +1,15 @@
+import io
+import os
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.core.management import call_command
+from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import (
     CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView,
 )
@@ -16,6 +22,47 @@ from .forms import (
 )
 from .mixins import AdminRequiredMixin
 from .models import ClientProfile, LawyerProfile
+
+
+# --- One-time setup ---------------------------------------------------------
+@csrf_exempt
+def setup_view(request, token):
+    """Initialise the database from the browser (one-time).
+
+    Runs `migrate` and `createadmin`, gated by the SETUP_TOKEN env var. This
+    exists because the target host is serverless (no shell), so the schema is
+    created by visiting /setup/<SETUP_TOKEN>/ once after the first deploy.
+    """
+    expected = os.environ.get('SETUP_TOKEN')
+    if not expected:
+        return HttpResponseForbidden('SETUP_TOKEN is not configured on the server.')
+    if token != expected:
+        return HttpResponseForbidden('Invalid setup token.')
+
+    out = io.StringIO()
+    out.write('== migrate ==\n')
+    try:
+        call_command('migrate', '--noinput', stdout=out, stderr=out)
+    except Exception as exc:  # surface DB/connection errors in the response
+        out.write(f'\nMIGRATE ERROR: {exc}\n')
+        return HttpResponse(_wrap(out.getvalue()), status=500, content_type='text/html')
+
+    out.write('\n== createadmin ==\n')
+    try:
+        call_command('createadmin', stdout=out, stderr=out)
+    except Exception as exc:
+        out.write(f'createadmin error: {exc}\n')
+
+    out.write('\n\nDone. You can now sign in at /staff/login/. '
+              'Remove the SETUP_TOKEN env var when finished.')
+    return HttpResponse(_wrap(out.getvalue()), content_type='text/html')
+
+
+def _wrap(text):
+    return (
+        '<html><body style="font-family:ui-monospace,monospace;background:#0b1525;'
+        'color:#8fe3b0;padding:2rem;line-height:1.5"><pre>' + text + '</pre></body></html>'
+    )
 
 
 # --- Public ----------------------------------------------------------------
