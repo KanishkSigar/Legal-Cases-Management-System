@@ -1,4 +1,4 @@
-# ⚖️ Legal Cases Management System
+# ⚖️ CaseHarbor — Legal Cases Management System
 
 A role-based web application that helps law firms run their day-to-day operations —
 **cases, appointments, lawyers and clients** — on top of a clean, normalised
@@ -228,8 +228,8 @@ is also enforced server-side by `RoleRequiredMixin` / `AdminRequiredMixin`
 ## 🚀 Getting started (local)
 
 ```bash
-git clone https://github.com/KanishkSigar/Legal-Cases-Management-System.git
-cd Legal-Cases-Management-System
+git clone https://github.com/KanishkSigar/CaseHarbor.git
+cd CaseHarbor
 
 python -m venv venv
 venv\Scripts\activate          # macOS/Linux: source venv/bin/activate
@@ -289,23 +289,18 @@ TiDB Cloud, filess.io, etc.).
    | Key | Value |
    |-----|-------|
    | `DATABASE_URL` | your MySQL connection string |
+   | `DB_SSL_REQUIRE` | `True` (most managed MySQL needs TLS) |
    | `SECRET_KEY` | a long random string |
    | `DEBUG` | `False` |
-   | `DB_SSL_REQUIRE` | `True` (most managed MySQL needs TLS) |
    | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | first admin to bootstrap |
-3. **Deploy:**
-   ```bash
-   npm i -g vercel
-   vercel            # first deploy / link
-   vercel --prod
-   ```
-   `vercel.json` routes all traffic to the WSGI entrypoint in `api/index.py`, and
-   `collectstatic` runs at build time (served by WhiteNoise).
-4. **Initialise the schema once** (from your machine, pointed at the same `DATABASE_URL`):
-   ```bash
-   DATABASE_URL="mysql://…" python manage.py migrate
-   DATABASE_URL="mysql://…" python manage.py createadmin
-   ```
+   | `SETUP_TOKEN` | a random string — used once to initialise the DB |
+3. **Deploy:** push to `main` (auto-deploys if the repo is connected), or run
+   `npm i -g vercel && vercel --prod`. `vercel.json` routes all traffic to the Django
+   WSGI app; static files are served by WhiteNoise at runtime (no build step).
+4. **Initialise the database once** by visiting
+   `https://<your-project>.vercel.app/setup/<SETUP_TOKEN>/` — it runs the migrations and
+   creates the admin from the browser (the serverless host has no shell). Then clear
+   `SETUP_TOKEN` to disable the endpoint.
 
 See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full step-by-step.
 
@@ -321,8 +316,7 @@ cases/          # Case + CaseNote models, role-scoped views, notes timeline
 appointments/   # Appointment model and scheduling views
 templates/      # Bootstrap 5 templates (landing, auth, app pages)
 static/         # theme CSS
-api/            # Vercel serverless entrypoint (WSGI)
-vercel.json     # Vercel build & routing config
+vercel.json     # Vercel build & routing config (single Python build → config/wsgi.py)
 ```
 
 ---

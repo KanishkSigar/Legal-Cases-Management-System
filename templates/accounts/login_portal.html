@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-{% block title %}Sign in — Legal CMS{% endblock %}
+{% block title %}Sign in — CaseHarbor{% endblock %}
 {% block content %}
 <div class="auth-screen">
   <div class="auth-card">
-    <a href="{% url 'landing' %}" class="auth-brand"><i class="bi bi-bank2"></i> Legal<span>CMS</span></a>
+    <a href="{% url 'landing' %}" class="auth-brand"><i class="bi bi-bank2"></i> Case<span>Harbor</span></a>
     <h4>Client &amp; Lawyer portal</h4>
     <p class="auth-sub">Sign in to view your cases and appointments.</p>
     {% if form.non_field_errors %}

@@ -6,76 +6,73 @@ filesystem**, so you must use an **external managed MySQL** — the app reads a 
 `DATABASE_URL`.
 
 ## What's already wired up
-- `vercel.json` — two builds: the Python WSGI app (`config/wsgi.py`) and a static build
-  (`build_files.sh`) whose output is served at `/static/*`.
-- `api/index.py` + `config/wsgi.py` — expose the WSGI callable as `app`.
-- `build_files.sh` — installs deps and runs `collectstatic` at build time.
-- `settings.py` — reads `DATABASE_URL`, trusts the Vercel host, serves static via
-  WhiteNoise, and turns on secure cookies when `DEBUG=False`.
+- `vercel.json` — a single `@vercel/python` build that routes all traffic to the
+  Django WSGI app (`config/wsgi.py`).
+- `settings.py` — reads `DATABASE_URL` (with TLS for managed MySQL), trusts the Vercel
+  host, serves static files via **WhiteNoise at runtime** (no build step needed), and
+  turns on secure cookies/HSTS when `DEBUG=False`.
+- `/setup/<SETUP_TOKEN>/` — a one-time, token-gated URL that runs `migrate` +
+  `createadmin` from the browser, because the serverless host has no shell.
 
 ## Step 1 — Provision a MySQL database
-Use any managed MySQL provider (free tiers exist on **TiDB Cloud**, **Railway**,
-**Aiven**, **filess.io**, etc.). Create a database and copy its connection string:
+Use any managed MySQL provider with a free tier (**Aiven**, **TiDB Cloud**, **Railway**,
+**filess.io**, …). Create a database and copy its connection string:
 
 ```
-mysql://USER:PASSWORD@HOST:3306/DBNAME
+mysql://USER:PASSWORD@HOST:PORT/DBNAME
 ```
 
 ## Step 2 — Import the repo into Vercel
-- Push this repo to GitHub (already done).
-- In Vercel: **Add New → Project → Import** `Legal-Cases-Management-System`.
-- Framework preset: **Other** (the `vercel.json` handles the build).
+- In Vercel: **Add New → Project → Import** `CaseHarbor`.
+- Framework preset: **Other** (the `vercel.json` handles everything).
 
 ## Step 3 — Environment variables (Project → Settings → Environment Variables)
-| Key | Example / value |
-|-----|-----------------|
-| `DATABASE_URL` | `mysql://user:pass@host:3306/legal_cms` |
+| Key | Value |
+|-----|-------|
+| `DATABASE_URL` | your `mysql://…` connection string |
+| `DB_SSL_REQUIRE` | `True` (managed MySQL needs TLS) |
 | `SECRET_KEY` | a long random string |
 | `DEBUG` | `False` |
-| `DB_SSL_REQUIRE` | `True` (most managed MySQL requires TLS) |
-| `CSRF_TRUSTED_ORIGINS` | `https://your-project.vercel.app` |
 | `ADMIN_USERNAME` | `admin` |
-| `ADMIN_PASSWORD` | a strong password |
+| `ADMIN_PASSWORD` | a strong password (your login) |
+| `SETUP_TOKEN` | any random string — used once to initialise the DB |
+
+`CSRF_TRUSTED_ORIGINS` defaults to `https://*.vercel.app` and `ALLOWED_HOSTS` already
+accepts `*.vercel.app`, so no extra host config is needed for the default domain.
 
 ## Step 4 — Deploy
-From the project root:
+Push to `main` (auto-deploys if the GitHub repo is connected), or run:
 
 ```bash
 npm i -g vercel
-vercel            # link the project (first time)
-vercel --prod     # production deploy
+vercel --prod
 ```
 
-…or just push to `main` if you connected the GitHub repo (auto-deploys).
+## Step 5 — Initialise the database (one click, once)
+After the deploy is green, visit:
 
-## Step 5 — Create the schema (run once)
-Vercel build containers don't run migrations. Apply them from your machine, pointed at
-the **same** `DATABASE_URL`:
-
-```bash
-# PowerShell
-$env:DATABASE_URL="mysql://user:pass@host:3306/legal_cms"; $env:DB_SSL_REQUIRE="True"
-python manage.py migrate
-python manage.py createadmin           # uses ADMIN_USERNAME / ADMIN_PASSWORD env, or pass flags
+```
+https://<your-project>.vercel.app/setup/<SETUP_TOKEN>/
 ```
 
-```bash
-# bash
-DATABASE_URL="mysql://user:pass@host:3306/legal_cms" DB_SSL_REQUIRE=True python manage.py migrate
-DATABASE_URL="mysql://user:pass@host:3306/legal_cms" DB_SSL_REQUIRE=True python manage.py createadmin --username admin --password "StrongPass@123"
-```
+This runs the migrations and creates your admin account, then prints the result. When
+it says **Done**, remove the `SETUP_TOKEN` env var (so the endpoint is disabled) and
+redeploy.
+
+> Prefer the CLI? You can instead run `migrate` + `createadmin` locally with the same
+> `DATABASE_URL`/`DB_SSL_REQUIRE` env vars — the `/setup/` URL just exists because the
+> serverless host has no shell.
 
 ## Step 6 — Verify
-- Visit `https://<your-project>.vercel.app/` → landing page.
-- `/staff/login/` → sign in as the admin you created → add lawyers, clients, cases.
-- If static/admin CSS is missing, re-check that the build ran `collectstatic`
-  (Vercel build logs) and that `/static/app.css` resolves.
+- `https://<your-project>.vercel.app/` → landing page.
+- `/staff/login/` → sign in with `ADMIN_USERNAME` / `ADMIN_PASSWORD` → add lawyers,
+  clients, cases, appointments.
 
 ## Notes & gotchas
-- **No SQLite in production** — it would reset on every cold start. Always set
-  `DATABASE_URL`.
-- **Migrations** are intentionally run manually (Step 5) so a deploy never blocks on a
-  long migration.
-- **Cold starts**: the first request after idle is slower (serverless). Normal for free
+- **No SQLite in production** — it resets on every cold start. Always set `DATABASE_URL`.
+- **Static files** are served by WhiteNoise from within the function (finders enabled),
+  so styling works without a separate build step.
+- **Cold starts**: the first request after idle is slower (serverless). Normal on free
   tiers.
-- Prefer a provider in a **region near your Vercel functions** to reduce DB latency.
+- Pick a DB region **near your Vercel functions** (e.g. US East / `iad1`) to cut latency.
+- Disable the `/setup/` endpoint after first use by clearing `SETUP_TOKEN`.
