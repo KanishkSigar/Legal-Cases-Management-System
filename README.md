@@ -12,7 +12,7 @@ A role-based web application that helps law firms run their day-to-day operation
 access-controlled view, with permissions enforced **at the database-query level**, not
 just hidden in the UI.
 
-### 🔗 Live demo → **[caseharbor.onrender.com](https://caseharbor.onrender.com)**
+### 🔗 Live app → **[caseharbor.onrender.com](https://caseharbor.onrender.com)**  ·  📄 Overview → **[kanishksigar.me/CaseHarbor](https://kanishksigar.me/CaseHarbor/)**
 The landing page is public. Sign in at **/staff/login/** (admin) or **/login/**
 (client/lawyer). *Note: the free host sleeps when idle, so the first load can take
 ~30–60 s to wake.*
