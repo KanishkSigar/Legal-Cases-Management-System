@@ -112,7 +112,11 @@ if DATABASE_URL:
         # Rebuild OPTIONS cleanly (drop any stray ?ssl-mode=... query param that
         # dj-database-url leaves behind, which PyMySQL doesn't understand).
         options = {'charset': 'utf8mb4'}
-        if env.bool('DB_SSL_REQUIRE', default=False):
+        # Managed MySQL (Aiven, etc.) requires TLS. Enable it automatically for
+        # any non-local host, so DATABASE_URL is the only var you must set.
+        host = (_default.get('HOST') or '').lower()
+        is_local = host in ('', 'localhost', '127.0.0.1')
+        if env.bool('DB_SSL_REQUIRE', default=not is_local):
             import ssl as _ssl
 
             ssl_ctx = _ssl.create_default_context()
@@ -120,8 +124,8 @@ if DATABASE_URL:
             if ca:
                 ssl_ctx.load_verify_locations(ca)  # verify against provider CA
             else:
-                # Managed MySQL (e.g. Aiven) uses a private CA. Encrypt the
-                # connection but skip CA verification when no CA file is given.
+                # Managed providers use a private CA. Encrypt the connection but
+                # skip CA verification when no CA file is supplied.
                 ssl_ctx.check_hostname = False
                 ssl_ctx.verify_mode = _ssl.CERT_NONE
             options['ssl'] = ssl_ctx

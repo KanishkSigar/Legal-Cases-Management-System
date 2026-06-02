@@ -1,7 +1,9 @@
 import io
 import os
+import secrets
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.management import call_command
@@ -26,35 +28,54 @@ from .models import ClientProfile, LawyerProfile
 
 # --- One-time setup ---------------------------------------------------------
 @csrf_exempt
-def setup_view(request, token):
-    """Initialise the database from the browser (one-time).
+def setup_view(request):
+    """Initialise the database from the browser (one-time, no shell needed).
 
-    Runs `migrate` and `createadmin`, gated by the SETUP_TOKEN env var. This
-    exists because the target host is serverless (no shell), so the schema is
-    created by visiting /setup/<SETUP_TOKEN>/ once after the first deploy.
+    Runs migrations (always — idempotent) and creates the first administrator
+    if none exists yet. Because the serverless host has no shell, this is how
+    the schema gets created after the first deploy. Usage:
+
+        /setup/?username=admin&password=YourStrongPass
+
+    If you omit the password a strong one is generated and shown once. After an
+    admin exists the endpoint refuses to create more. If you set a SETUP_TOKEN
+    env var, callers must also pass ?token=<that value>.
     """
-    expected = os.environ.get('SETUP_TOKEN')
-    if not expected:
-        return HttpResponseForbidden('SETUP_TOKEN is not configured on the server.')
-    if token != expected:
-        return HttpResponseForbidden('Invalid setup token.')
+    required = os.environ.get('SETUP_TOKEN')
+    if required and request.GET.get('token') != required:
+        return HttpResponseForbidden('Missing or invalid ?token=.')
 
     out = io.StringIO()
     out.write('== migrate ==\n')
     try:
         call_command('migrate', '--noinput', stdout=out, stderr=out)
-    except Exception as exc:  # surface DB/connection errors in the response
+    except Exception as exc:  # surface DB / connection errors in the response
         out.write(f'\nMIGRATE ERROR: {exc}\n')
         return HttpResponse(_wrap(out.getvalue()), status=500, content_type='text/html')
 
-    out.write('\n== createadmin ==\n')
-    try:
-        call_command('createadmin', stdout=out, stderr=out)
-    except Exception as exc:
-        out.write(f'createadmin error: {exc}\n')
+    User = get_user_model()
+    out.write('\n== administrator ==\n')
+    if User.objects.filter(is_superuser=True).exists():
+        out.write('An administrator already exists — skipping.\n')
+    else:
+        username = request.GET.get('username') or os.environ.get('ADMIN_USERNAME') or 'admin'
+        password = request.GET.get('password') or os.environ.get('ADMIN_PASSWORD')
+        generated = False
+        if not password:
+            password = secrets.token_urlsafe(9)
+            generated = True
+        admin = User(
+            username=username, role=User.Role.ADMIN,
+            is_staff=True, is_superuser=True,
+            email=os.environ.get('ADMIN_EMAIL', ''),
+        )
+        admin.set_password(password)
+        admin.save()
+        out.write(f'Created administrator "{username}".\n')
+        if generated:
+            out.write(f'GENERATED PASSWORD (copy it now — shown only once):\n    {password}\n')
 
-    out.write('\n\nDone. You can now sign in at /staff/login/. '
-              'Remove the SETUP_TOKEN env var when finished.')
+    out.write('\nDone. Sign in at /staff/login/.\n')
     return HttpResponse(_wrap(out.getvalue()), content_type='text/html')
 
 

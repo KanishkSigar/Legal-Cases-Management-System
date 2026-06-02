@@ -7,8 +7,8 @@ urlpatterns = [
     # Public
     path('', views.LandingView.as_view(), name='landing'),
 
-    # One-time DB setup (gated by SETUP_TOKEN env var)
-    path('setup/<str:token>/', views.setup_view, name='setup'),
+    # One-time DB setup from the browser (optional ?token= via SETUP_TOKEN env)
+    path('setup/', views.setup_view, name='setup'),
 
     # Authentication
     path('login/', views.PortalLoginView.as_view(), name='login'),

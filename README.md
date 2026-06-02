@@ -285,22 +285,21 @@ TiDB Cloud, filess.io, etc.).
    ```
    mysql://USER:PASSWORD@HOST:3306/DBNAME
    ```
-2. **Set Vercel environment variables** (Project → Settings → Environment Variables):
+2. **Set one Vercel environment variable** (Project → Settings → Environment Variables):
    | Key | Value |
    |-----|-------|
-   | `DATABASE_URL` | your MySQL connection string |
-   | `DB_SSL_REQUIRE` | `True` (most managed MySQL needs TLS) |
-   | `SECRET_KEY` | a long random string |
-   | `DEBUG` | `False` |
-   | `ADMIN_USERNAME` / `ADMIN_PASSWORD` | first admin to bootstrap |
-   | `SETUP_TOKEN` | a random string — used once to initialise the DB |
+   | `DATABASE_URL` | your `mysql://USER:PASS@HOST:PORT/DBNAME` connection string |
+
+   TLS is auto-enabled for managed hosts, `DEBUG` defaults off, and `*.vercel.app` is
+   trusted — so this is the only required var. (Optionally add `SECRET_KEY` and a
+   `SETUP_TOKEN` for extra hardening.)
 3. **Deploy:** push to `main` (auto-deploys if the repo is connected), or run
    `npm i -g vercel && vercel --prod`. `vercel.json` routes all traffic to the Django
    WSGI app; static files are served by WhiteNoise at runtime (no build step).
 4. **Initialise the database once** by visiting
-   `https://<your-project>.vercel.app/setup/<SETUP_TOKEN>/` — it runs the migrations and
-   creates the admin from the browser (the serverless host has no shell). Then clear
-   `SETUP_TOKEN` to disable the endpoint.
+   `https://<your-project>.vercel.app/setup/?username=admin&password=YourStrongPass` — it
+   runs the migrations and creates your admin from the browser (the serverless host has
+   no shell). Repeat visits are refused once an admin exists.
 
 See **[DEPLOYMENT.md](DEPLOYMENT.md)** for the full step-by-step.
 
