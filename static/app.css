@@ -159,10 +159,122 @@ a { text-decoration: none; }
 .dir-avatar { width: 52px; height: 52px; flex: 0 0 52px; border-radius: 50%; background: var(--navy); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 1.05rem; }
 .lawyer-directory-card:hover { box-shadow: 0 12px 30px rgba(15,27,45,.08); }
 
-/* Responsive */
+/* Responsive (legacy landing) */
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; }
   .hero-card-wrap { order: -1; }
   .schema-wrap { grid-template-columns: 1fr; }
   .landing-links a:not(.btn-pill) { display: none; }
+}
+
+/* ============================================================
+   LANDING v2 — product / dashboard direction (.lp-*)
+   ============================================================ */
+.lp{margin:0;color:var(--ink)}
+.lp ::selection{background:var(--gold-soft)}
+
+/* Nav */
+.lp-nav{position:sticky;top:0;z-index:30;display:flex;justify-content:space-between;align-items:center;
+  padding:1rem 6vw;background:rgba(246,247,249,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.lp-brand{font-weight:800;font-size:1.3rem;color:var(--navy)}
+.lp-brand span{color:var(--gold)}
+.lp-links{display:flex;align-items:center;gap:1.4rem}
+.lp-links>a:not(.lp-btn-solid):not(.lp-btn-ghost){color:var(--slate);font-weight:600;font-size:.95rem}
+.lp-links>a:hover{color:var(--navy)}
+.lp-btn-ghost{padding:.5rem 1rem;border-radius:.55rem;font-weight:700;color:var(--navy)!important;border:1.5px solid var(--line)}
+.lp-btn-ghost:hover{border-color:var(--navy)}
+.lp-btn-solid{padding:.5rem 1.1rem;border-radius:.55rem;font-weight:700;background:var(--navy);color:#fff!important}
+.lp-btn-solid:hover{background:var(--navy-2)}
+
+/* Hero */
+.lp-hero{display:grid;grid-template-columns:1.05fr .95fr;gap:2.5rem;align-items:center;
+  padding:5rem 6vw 4.5rem;background:radial-gradient(1100px 520px at 0% -10%,#fff,var(--bg))}
+.lp-eyebrow{display:inline-block;color:var(--gold);font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:.76rem;margin-bottom:1rem}
+.lp-hero h1{font-size:clamp(2rem,4.4vw,3.3rem);font-weight:800;line-height:1.1;color:var(--navy);margin:.2rem 0}
+.lp-hero-copy>p{color:var(--slate);font-size:1.12rem;max-width:34rem;margin:1.1rem 0 1.9rem}
+.lp-cta{display:flex;gap:.8rem;flex-wrap:wrap;align-items:center}
+.lp-cta.center{justify-content:center}
+.lp-btn-primary{background:var(--navy);color:#fff!important;padding:.9rem 1.6rem;border-radius:.6rem;font-weight:700;
+  box-shadow:0 10px 26px rgba(15,27,45,.2);transition:transform .15s,box-shadow .15s}
+.lp-btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(15,27,45,.3)}
+.lp-btn-primary.lg,.lp-btn-line.lg{padding:1rem 1.9rem;font-size:1.05rem}
+.lp-btn-line{padding:.9rem 1.5rem;border-radius:.6rem;font-weight:700;color:var(--navy)!important;border:1.5px solid var(--line);background:#fff}
+.lp-btn-line:hover{border-color:var(--navy)}
+.lp-trust{display:flex;gap:2.6rem;margin-top:2.6rem}
+.lp-trust strong{display:block;font-size:1.9rem;font-weight:800;color:var(--navy)}
+.lp-trust span{color:var(--slate);font-size:.85rem}
+
+/* Dashboard mockup */
+.lp-mock{display:flex;justify-content:center}
+.mock-win{width:100%;max-width:440px;background:#fff;border:1px solid var(--line);border-radius:1rem;overflow:hidden;
+  box-shadow:0 30px 70px rgba(15,27,45,.18);animation:lpfloat 6s ease-in-out infinite}
+@keyframes lpfloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.mock-bar{display:flex;align-items:center;gap:.4rem;padding:.7rem .9rem;background:#f1f3f6;border-bottom:1px solid var(--line)}
+.mock-bar .d{width:10px;height:10px;border-radius:50%}
+.mock-bar .r{background:#ef6461}.mock-bar .y{background:#e6b450}.mock-bar .g{background:#5fae7e}
+.mock-bar em{margin-left:.5rem;font-style:normal;font-size:.72rem;color:var(--slate);background:#fff;border:1px solid var(--line);border-radius:.4rem;padding:.12rem .6rem}
+.mock-body{padding:1rem}
+.mock-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin-bottom:.9rem}
+.kpi{border-radius:.6rem;padding:.7rem;color:#fff}
+.kpi span{display:block;font-size:.7rem;opacity:.9}
+.kpi b{font-size:1.5rem}
+.kpi-a{background:linear-gradient(135deg,#1f3b63,#2d6cdf)}
+.kpi-b{background:linear-gradient(135deg,#16263d,#3a7e63)}
+.kpi-c{background:linear-gradient(135deg,#3a2f5b,#7a5fae)}
+.mock-table{border:1px solid var(--line);border-radius:.6rem;overflow:hidden;font-size:.78rem}
+.mt-head,.mt-row{display:grid;grid-template-columns:1.7fr 1fr .9fr;align-items:center;gap:.4rem;padding:.5rem .7rem}
+.mt-head{background:#f6f7f9;color:var(--slate);font-weight:700;text-transform:uppercase;font-size:.66rem;letter-spacing:.04em}
+.mt-row{border-top:1px solid var(--line)}
+.mt-row b{color:var(--navy)}
+.mt-row>span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.badge{font-style:normal;font-size:.66rem;font-weight:700;padding:.12rem .5rem;border-radius:999px;justify-self:start}
+.b-blue{background:#e7f0ff;color:#2d6cdf}.b-green{background:#e3f6ec;color:#2e9e63}
+.b-amber{background:#fff3df;color:#b5841f}.b-gray{background:#eceef1;color:#5b6b7d}
+.mock-appt{margin-top:.8rem;background:#0b1525;color:#cfe6d9;border-radius:.6rem;padding:.6rem .8rem;font-size:.78rem}
+.mock-appt b{color:#fff}
+
+/* Sections */
+.lp-section{padding:4.8rem 6vw;max-width:1140px;margin:0 auto}
+.lp-h2{text-align:center;font-size:clamp(1.6rem,3vw,2.3rem);font-weight:800;color:var(--navy)}
+.lp-sub{text-align:center;color:var(--slate);max-width:42rem;margin:.6rem auto 2.6rem}
+.lp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1.2rem}
+.lp-card{background:#fff;border:1px solid var(--line);border-radius:.9rem;padding:1.6rem;transition:transform .15s,box-shadow .15s}
+.lp-card:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(15,27,45,.1)}
+.lp-ic{width:48px;height:48px;border-radius:.65rem;display:grid;place-items:center;font-size:1.35rem;color:var(--navy);background:var(--gold-soft);margin-bottom:1rem}
+.lp-card h3{color:var(--navy);font-size:1.12rem;margin:.2rem 0}
+.lp-card p{color:var(--slate);font-size:.94rem;margin:0}
+
+/* Roles */
+.lp-rolegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1.2rem}
+.role{background:#fff;border:1px solid var(--line);border-radius:.9rem;overflow:hidden}
+.role-top{padding:1rem 1.3rem;color:#fff;font-weight:800;font-size:1.1rem;display:flex;align-items:center;gap:.5rem}
+.role-admin{background:linear-gradient(120deg,#3a2f5b,#7a5fae)}
+.role-lawyer{background:linear-gradient(120deg,#1f3b63,#2d6cdf)}
+.role-client{background:linear-gradient(120deg,#16263d,#3a7e63)}
+.role p{color:var(--slate);font-size:.94rem;padding:1.1rem 1.3rem;margin:0}
+.lp-rolecta{text-align:center;margin-top:2.4rem}
+
+/* Schema (dark) */
+.lp-dark{max-width:none;background:var(--navy);color:#dfe6ef}
+.lp-dark .lp-h2{color:#fff}.lp-dark .lp-sub{color:#9fb0c4}
+.lp-dark code{background:rgba(0,0,0,.3);color:#ffd98a;padding:.05rem .35rem;border-radius:.25rem}
+.lp-schema{display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center;max-width:1000px;margin:0 auto}
+.lp-er{background:#0b1525;color:#8fe3b0;border:1px solid #24334a;border-radius:.8rem;padding:1.2rem;font-size:.72rem;line-height:1.35;overflow-x:auto}
+.lp-points{list-style:none;padding:0;margin:0;display:grid;gap:.9rem}
+.lp-points li{background:var(--navy-2);border:1px solid #24334a;border-radius:.7rem;padding:.9rem 1.1rem;font-size:.92rem;color:#aebfd2}
+.lp-points b{color:var(--gold-soft)}
+
+/* CTA band + footer */
+.lp-band{text-align:center;padding:4.5rem 6vw;background:linear-gradient(120deg,var(--navy),var(--navy-2));color:#fff}
+.lp-band h2{font-weight:800;margin-bottom:.5rem}
+.lp-band p{color:#9fb0c4;margin-bottom:1.6rem}
+.lp-foot{display:flex;justify-content:space-between;align-items:center;padding:1.6rem 6vw;color:var(--slate);border-top:1px solid var(--line);flex-wrap:wrap;gap:.6rem}
+.lp-foot-links{display:flex;gap:1.4rem}.lp-foot-links a{color:var(--slate)}.lp-foot-links .muted{opacity:.7}
+
+@media (max-width:880px){
+  .lp-hero{grid-template-columns:1fr;gap:2rem}
+  .lp-mock{order:-1}
+  .lp-schema{grid-template-columns:1fr}
+  .lp-links>a:not(.lp-btn-solid){display:none}
+  .lp-trust{gap:1.8rem}
 }
