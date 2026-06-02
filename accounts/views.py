@@ -3,7 +3,7 @@ import os
 import secrets
 
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.management import call_command
@@ -20,7 +20,7 @@ from appointments.models import Appointment
 from cases.models import Case
 
 from .forms import (
-    ClientForm, ClientProfileEditForm, LawyerForm, LawyerProfileEditForm,
+    ClientForm, ClientProfileEditForm, LawyerForm, LawyerProfileEditForm, SignUpForm,
 )
 from .mixins import AdminRequiredMixin
 from .models import ClientProfile, LawyerProfile
@@ -135,6 +135,24 @@ class LandingView(TemplateView):
 
 
 # --- Authentication --------------------------------------------------------
+class SignUpView(CreateView):
+    """Public self-registration for clients; logs the new user straight in."""
+
+    form_class = SignUpForm
+    template_name = 'accounts/signup.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect('dashboard')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        messages.success(self.request, f'Welcome to CaseHarbor, {user.first_name}!')
+        return redirect('dashboard')
+
+
 class PortalLoginView(LoginView):
     """Client / lawyer sign-in. Admins are redirected to the staff portal."""
 

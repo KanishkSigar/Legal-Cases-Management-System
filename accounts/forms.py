@@ -26,6 +26,27 @@ class _PersonForm(UserCreationForm):
         return user
 
 
+class SignUpForm(UserCreationForm):
+    """Public self-registration. Always creates a CLIENT account — the role is
+    fixed server-side so it can never be escalated from form input."""
+
+    first_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'placeholder': 'First name'}))
+    last_name = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'placeholder': 'Last name'}))
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'you@example.com'}))
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'username')
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.role = User.Role.CLIENT  # never trust a role from the request
+        if commit:
+            user.save()
+            ClientProfile.objects.get_or_create(user=user)
+        return user
+
+
 class LawyerForm(_PersonForm):
     role = User.Role.LAWYER
     specialization = forms.CharField(max_length=120, required=False)

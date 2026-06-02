@@ -11,6 +11,7 @@ urlpatterns = [
     path('setup/', views.setup_view, name='setup'),
 
     # Authentication
+    path('signup/', views.SignUpView.as_view(), name='signup'),
     path('login/', views.PortalLoginView.as_view(), name='login'),
     path('staff/login/', views.AdminLoginView.as_view(), name='admin_login'),
     path('logout/', LogoutView.as_view(), name='logout'),

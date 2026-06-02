@@ -1,23 +1,23 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
-{% block title %}Sign in — CaseHarbor{% endblock %}
+{% block title %}Create account — CaseHarbor{% endblock %}
 {% block content %}
 <div class="auth-screen">
   <div class="auth-card">
     <a href="{% url 'landing' %}" class="auth-brand"><i class="bi bi-bank2"></i> Case<span>Harbor</span></a>
-    <h4>Client &amp; Lawyer portal</h4>
-    <p class="auth-sub">Sign in to view your cases and appointments.</p>
+    <h4>Create your account</h4>
+    <p class="auth-sub">Sign up as a client to track your cases and appointments.</p>
     {% if form.non_field_errors %}
       <div class="alert alert-danger py-2">{{ form.non_field_errors|join:" " }}</div>
     {% endif %}
     <form method="post">
       {% csrf_token %}
       {{ form|crispy }}
-      <button type="submit" class="btn btn-dark w-100 mt-2">Sign in</button>
+      <button type="submit" class="btn btn-dark w-100 mt-2">Create account</button>
     </form>
     <div class="auth-foot">
-      <a href="{% url 'signup' %}">New here? Create an account</a>
-      <a href="{% url 'admin_login' %}" class="text-muted">Staff portal</a>
+      <a href="{% url 'login' %}">Already have an account? Sign in</a>
+      <a href="{% url 'landing' %}" class="text-muted">← Home</a>
     </div>
   </div>
 </div>
