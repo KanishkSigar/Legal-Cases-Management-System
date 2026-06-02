@@ -1,17 +1,28 @@
 # ⚖️ CaseHarbor — Legal Cases Management System
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-caseharbor.onrender.com-2ea44f?style=flat&logo=render)](https://caseharbor.onrender.com)
+[![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-5%2F6-092E20?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-relational-4169E1?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 A role-based web application that helps law firms run their day-to-day operations —
 **cases, appointments, lawyers and clients** — on top of a clean, normalised
 **relational database**. Three user roles (Admin, Lawyer, Client) each get a tailored,
 access-controlled view, with permissions enforced **at the database-query level**, not
 just hidden in the UI.
 
+### 🔗 Live demo → **[caseharbor.onrender.com](https://caseharbor.onrender.com)**
+The landing page is public. Sign in at **/staff/login/** (admin) or **/login/**
+(client/lawyer). *Note: the free host sleeps when idle, so the first load can take
+~30–60 s to wake.*
+
 > **The focus of this project is the data layer** — how a handful of well-designed
 > tables, foreign keys and query-scoping rules model an entire legal practice. The
 > [Database Schema](#-database-schema--the-heart-of-the-system) section below is the
 > highlight.
 
-**Stack:** Django 5/6 · MySQL · Bootstrap 5 · WhiteNoise · deployable to Vercel.
+**Stack:** Django 5/6 · PostgreSQL / MySQL · Bootstrap 5 · WhiteNoise · deployed on Render.
 
 ---
 
