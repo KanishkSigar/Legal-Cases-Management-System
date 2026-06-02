@@ -47,10 +47,12 @@ def setup_view(request):
 
     out = io.StringIO()
 
-    # Safe diagnostics: /setup/?debug=1 shows the effective DB config the server
-    # is using (never the password value — only its length), so we can tell
-    # whether the right credentials are actually in effect.
+    # Safe diagnostics: /setup/?debug=1 shows the effective DB config (never the
+    # password value — only its length). Disabled unless a SETUP_TOKEN is set
+    # (and matched above), so it can't leak details on a live site.
     if request.GET.get('debug'):
+        if not required:
+            return HttpResponseForbidden('Diagnostics disabled. Set SETUP_TOKEN to enable.')
         from django.conf import settings as _s
         db = _s.DATABASES['default']
         out.write('== effective DB config (no secrets) ==\n')
