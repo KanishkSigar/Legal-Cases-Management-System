@@ -1,155 +1,154 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}CaseHarbor — Case Management for Modern Law Firms{% endblock %}
+{% block title %}CaseHarbor — Case management for modern law firms{% endblock %}
 
 {% block body %}
-<div class="landing">
+<div class="lp">
 
-  <!-- Top bar -->
-  <header class="landing-nav">
-    <a class="landing-brand" href="#top"><i class="bi bi-bank2"></i> Case<span>Harbor</span></a>
-    <nav class="landing-links">
+  <!-- Nav -->
+  <header class="lp-nav">
+    <a class="lp-brand" href="#top"><i class="bi bi-bank2"></i> Case<span>Harbor</span></a>
+    <nav class="lp-links">
       <a href="#features">Features</a>
+      <a href="#roles">Roles</a>
       <a href="#schema">Database</a>
-      <a href="#lawyers">Lawyers</a>
-      <a href="{% url 'login' %}" class="btn-pill">Client / Lawyer Login</a>
+      <a href="{% url 'login' %}" class="lp-btn-ghost">Sign in</a>
+      <a href="{% url 'signup' %}" class="lp-btn-solid">Sign up</a>
     </nav>
   </header>
 
   <!-- Hero -->
-  <section class="hero" id="top">
-    <div class="hero-inner">
-      <span class="eyebrow">Law firm operations, organised</span>
-      <h1>Manage cases, clients &amp; appointments<br>from a single source of truth.</h1>
-      <p class="lead">A role-based case management system built on a relational
-        MySQL core — every case, hearing and appointment connected by design.</p>
-      <div class="hero-cta">
-        <a href="{% url 'login' %}" class="btn-primary-xl">Enter the portal <i class="bi bi-arrow-right"></i></a>
-        <a href="#schema" class="btn-ghost-xl">See the data model</a>
+  <section class="lp-hero" id="top">
+    <div class="lp-hero-copy">
+      <span class="lp-eyebrow">Legal case management · built on a relational core</span>
+      <h1>Every case, client and hearing —<br>in one source of truth.</h1>
+      <p>CaseHarbor gives your firm a single place to track cases, schedule appointments
+        and manage clients, with role-based access enforced at the database level.</p>
+      <div class="lp-cta">
+        <a href="{% url 'signup' %}" class="lp-btn-primary">Create your account <i class="bi bi-arrow-right"></i></a>
+        <a href="{% url 'login' %}" class="lp-btn-line">Sign in</a>
       </div>
-      <div class="hero-stats">
-        <div><strong data-count="3">0</strong><span>connected roles</span></div>
+      <div class="lp-trust">
+        <div><strong data-count="3">0</strong><span>roles</span></div>
         <div><strong data-count="5">0</strong><span>core tables</span></div>
-        <div><strong data-count="{{ lawyer_count }}">0</strong><span>lawyers on file</span></div>
+        <div><strong data-count="100">0</strong><span>% query-scoped</span></div>
       </div>
     </div>
-    <div class="hero-card-wrap">
-      <div class="float-card glass">
-        <div class="fc-head"><span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span> case · CASE-2026-014</div>
-        <div class="fc-row"><span>Status</span><b class="pill pill-blue">In Progress</b></div>
-        <div class="fc-row"><span>Client</span><b>R. Mehta</b></div>
-        <div class="fc-row"><span>Lawyer</span><b>A. Sharma</b></div>
-        <div class="fc-row"><span>Next hearing</span><b>12 Jun, 10:30</b></div>
-        <div class="fc-bar"><i style="width:62%"></i></div>
+
+    <!-- Dashboard mockup -->
+    <div class="lp-mock" aria-hidden="true">
+      <div class="mock-win">
+        <div class="mock-bar"><span class="d r"></span><span class="d y"></span><span class="d g"></span>
+          <em>caseharbor.app/dashboard</em></div>
+        <div class="mock-body">
+          <div class="mock-kpis">
+            <div class="kpi kpi-a"><span>Open cases</span><b>24</b></div>
+            <div class="kpi kpi-b"><span>Appointments</span><b>7</b></div>
+            <div class="kpi kpi-c"><span>Clients</span><b>18</b></div>
+          </div>
+          <div class="mock-table">
+            <div class="mt-head"><span>Case</span><span>Lawyer</span><span>Status</span></div>
+            <div class="mt-row"><span><b>CASE-014</b> Johnson v. Acme</span><span>A. Sharma</span><i class="badge b-blue">In Progress</i></div>
+            <div class="mt-row"><span><b>CASE-013</b> Mehta Estate</span><span>M. Lopez</span><i class="badge b-green">Won</i></div>
+            <div class="mt-row"><span><b>CASE-012</b> State v. Rao</span><span>A. Sharma</span><i class="badge b-amber">Pending</i></div>
+            <div class="mt-row"><span><b>CASE-011</b> Patel Contract</span><span>R. Iyer</span><i class="badge b-gray">Closed</i></div>
+          </div>
+          <div class="mock-appt"><i class="bi bi-calendar-event"></i> Next hearing · <b>Jun 12, 10:30</b> · Room A</div>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- Features -->
-  <section class="section" id="features">
-    <h2 class="section-title">Everything a firm tracks, in one place</h2>
-    <p class="section-sub">Three roles, each with a tailored view — enforced at the database query level.</p>
-    <div class="feature-grid">
-      <div class="feature">
-        <div class="ft-icon"><i class="bi bi-folder2-open"></i></div>
-        <h3>Case management</h3>
-        <p>Case numbers, types and a full status workflow (Open → Won/Lost), with a notes timeline on every case.</p>
-      </div>
-      <div class="feature">
-        <div class="ft-icon"><i class="bi bi-calendar2-check"></i></div>
-        <h3>Appointments</h3>
-        <p>Schedule meetings between lawyers and clients, optionally tied to a case, with one-click complete / cancel.</p>
-      </div>
-      <div class="feature">
-        <div class="ft-icon"><i class="bi bi-people"></i></div>
-        <h3>Lawyers &amp; clients</h3>
-        <p>Full profiles — specialisation, bar number, contact details — each linked to a secure login account.</p>
-      </div>
-      <div class="feature">
-        <div class="ft-icon"><i class="bi bi-shield-lock"></i></div>
-        <h3>Role-based access</h3>
-        <p>Admins see all; lawyers see only their cases; clients see only their own — scoped in the ORM, not just the UI.</p>
-      </div>
+  <section class="lp-section" id="features">
+    <h2 class="lp-h2">Everything a firm tracks, in one place</h2>
+    <p class="lp-sub">A real workflow tool — not just a database admin screen.</p>
+    <div class="lp-grid">
+      <div class="lp-card"><div class="lp-ic"><i class="bi bi-folder2-open"></i></div>
+        <h3>Case management</h3><p>Case numbers, types, a status workflow (Open → Won/Lost), assigned lawyer, linked client and a notes timeline.</p></div>
+      <div class="lp-card"><div class="lp-ic"><i class="bi bi-calendar2-check"></i></div>
+        <h3>Appointments</h3><p>Schedule lawyer–client meetings, optionally tied to a case, with one-click complete / cancel.</p></div>
+      <div class="lp-card"><div class="lp-ic"><i class="bi bi-people"></i></div>
+        <h3>Lawyers &amp; clients</h3><p>Full profiles — specialisation, bar number, company, contact — each backed by a secure login.</p></div>
+      <div class="lp-card"><div class="lp-ic"><i class="bi bi-shield-lock"></i></div>
+        <h3>Role-based access</h3><p>Admins see all, lawyers see their cases, clients see their own — scoped in SQL, not just hidden in the UI.</p></div>
     </div>
   </section>
 
-  <!-- Schema highlight -->
-  <section class="section section-dark" id="schema">
-    <h2 class="section-title">Built around a relational core</h2>
-    <p class="section-sub">The whole system is a handful of well-normalised tables. Foreign keys keep every record consistent.</p>
-    <div class="schema-wrap">
-      <pre class="schema-er">
- ┌──────────────┐        ┌───────────────┐        ┌──────────────┐
- │   User       │ 1    1 │ LawyerProfile │ 1     * │    Case      │
- │  (accounts)  ├────────┤  specialism   ├────────┤  case_number │
- │  role, phone │        │  bar_number   │        │  status,type │
- └──────┬───────┘        └───────────────┘        └──────┬───────┘
-        │ 1            1 ┌───────────────┐                │ 1
-        └────────────────┤ ClientProfile ├── * ───────────┘
-                         │  company,addr │                │ *
-                         └───────┬───────┘         ┌───────┴───────┐
-                                 │ *               │   CaseNote    │
-                         ┌───────┴───────┐         │  author, text │
-                         │  Appointment  │         └───────────────┘
-                         │  scheduled_for│
-                         │  status, case │
-                         └───────────────┘
-      </pre>
-      <div class="schema-points">
-        <div class="sp"><b>Custom User + role</b><span>One auth table extended with a <code>role</code> column drives every permission.</span></div>
-        <div class="sp"><b>Profiles via 1-to-1</b><span><code>LawyerProfile</code> / <code>ClientProfile</code> keep domain data out of auth.</span></div>
-        <div class="sp"><b>Protected foreign keys</b><span>Cases reference client &amp; lawyer with <code>on_delete=PROTECT</code> — no orphaned records.</span></div>
-        <div class="sp"><b>Query-level scoping</b><span>A <code>for_user()</code> manager method filters rows by role at the SQL layer.</span></div>
-      </div>
+  <!-- Roles -->
+  <section class="lp-section lp-roles" id="roles">
+    <h2 class="lp-h2">Built for every role</h2>
+    <p class="lp-sub">One system, three tailored experiences.</p>
+    <div class="lp-rolegrid">
+      <div class="role"><div class="role-top role-admin"><i class="bi bi-gem"></i> Admin</div>
+        <p>Full control: manage lawyers, clients, every case and appointment, plus the admin console.</p></div>
+      <div class="role"><div class="role-top role-lawyer"><i class="bi bi-briefcase"></i> Lawyer</div>
+        <p>See and update only your assigned cases, add notes, and manage your own appointments.</p></div>
+      <div class="role"><div class="role-top role-client"><i class="bi bi-person-badge"></i> Client</div>
+        <p>Sign up in seconds and follow your own cases and upcoming appointments — read-only and private.</p></div>
+    </div>
+    <div class="lp-rolecta">
+      <a href="{% url 'signup' %}" class="lp-btn-primary">Sign up as a client <i class="bi bi-arrow-right"></i></a>
     </div>
   </section>
 
-  <!-- Lawyers -->
-  {% if featured_lawyers %}
-  <section class="section" id="lawyers">
-    <h2 class="section-title">Our lawyers</h2>
-    <div class="lawyer-row">
-      {% for lawyer in featured_lawyers %}
-        <div class="lawyer-chip">
-          <div class="avatar">{{ lawyer.user.first_name|first|default:"L" }}</div>
-          <div>
-            <b>{{ lawyer.user.get_full_name }}</b>
-            <span>{{ lawyer.specialization|default:"General practice" }}</span>
-          </div>
-        </div>
-      {% endfor %}
+  <!-- Schema -->
+  <section class="lp-section lp-dark" id="schema">
+    <h2 class="lp-h2">Built around a relational core</h2>
+    <p class="lp-sub">Five well-normalised tables. Foreign keys keep records consistent; a <code>for_user()</code> manager scopes rows by role in SQL.</p>
+    <div class="lp-schema">
+      <pre class="lp-er">
+ ┌──────────────┐      ┌───────────────┐      ┌──────────────┐
+ │     User     │ 1  1 │ LawyerProfile │ 1  * │     Case     │
+ │  role, phone ├──────┤  specialism   ├──────┤ case_number  │
+ │   (auth)     │      │  bar_number   │      │ status, type │
+ └──────┬───────┘      └───────────────┘      └──────┬───────┘
+        │ 1          1 ┌───────────────┐             │ 1
+        └──────────────┤ ClientProfile ├── * ────────┘
+                       │ company, addr │             │ *
+                       └───────┬───────┘      ┌───────┴───────┐
+                               │ *            │   CaseNote    │
+                       ┌───────┴───────┐      │  author, text │
+                       │  Appointment  │      └───────────────┘
+                       │ scheduled_for │
+                       └───────────────┘</pre>
+      <ul class="lp-points">
+        <li><b>Custom User + role</b> — one auth table drives every permission.</li>
+        <li><b>Profiles via 1-to-1</b> — domain data kept out of auth.</li>
+        <li><b>PROTECT foreign keys</b> — no orphaned legal records.</li>
+        <li><b>Query-level scoping</b> — a client can't load another client's case.</li>
+      </ul>
     </div>
   </section>
-  {% endif %}
 
   <!-- CTA -->
-  <section class="cta-band">
-    <h2>Ready to get organised?</h2>
-    <a href="{% url 'login' %}" class="btn-primary-xl">Sign in to the portal <i class="bi bi-arrow-right"></i></a>
+  <section class="lp-band">
+    <h2>Start tracking your cases today</h2>
+    <p>Free to try. Create a client account in under a minute.</p>
+    <div class="lp-cta center">
+      <a href="{% url 'signup' %}" class="lp-btn-primary lg">Get started <i class="bi bi-arrow-right"></i></a>
+      <a href="{% url 'login' %}" class="lp-btn-line lg">Sign in</a>
+    </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="landing-footer">
-    <div>© <span id="yr"></span> CaseHarbor</div>
-    <div class="foot-links">
+  <footer class="lp-foot">
+    <span>© <span id="yr"></span> CaseHarbor</span>
+    <span class="lp-foot-links">
       <a href="https://github.com/KanishkSigar/CaseHarbor" target="_blank" rel="noopener">GitHub</a>
-      <a href="{% url 'admin_login' %}" class="staff-link">Staff portal</a>
-    </div>
+      <a href="{% url 'admin_login' %}" class="muted">Staff portal</a>
+    </span>
   </footer>
 </div>
 
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
-  // Animated stat counters
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (!e.isIntersecting) return;
-      const el = e.target, target = +el.dataset.count;
-      let n = 0; const step = Math.max(1, Math.ceil(target / 30));
-      const t = setInterval(() => { n += step; if (n >= target) { n = target; clearInterval(t); } el.textContent = n; }, 30);
-      obs.unobserve(el);
-    });
-  }, { threshold: 0.5 });
-  document.querySelectorAll('[data-count]').forEach(el => obs.observe(el));
+  const io = new IntersectionObserver((es) => es.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target, t = +el.dataset.count; let n = 0;
+    const step = Math.max(1, Math.ceil(t / 28));
+    const iv = setInterval(() => { n += step; if (n >= t) { n = t; clearInterval(iv); } el.textContent = n; }, 28);
+    io.unobserve(el);
+  }, { threshold: .6 });
+  document.querySelectorAll('[data-count]').forEach(el => io.observe(el));
 </script>
 {% endblock %}
