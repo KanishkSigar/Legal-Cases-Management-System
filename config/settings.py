@@ -146,8 +146,10 @@ else:
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': env('DB_NAME', default='legal_cms'),
-            'USER': env('DB_USER', default='root'),
-            'PASSWORD': env('DB_PASSWORD', default=''),  # raw value — no URL encoding
+            'USER': env('DB_USER', default='root').strip(),
+            # .strip() removes a stray trailing space/newline that often sneaks in
+            # when pasting a password into a dashboard field.
+            'PASSWORD': env('DB_PASSWORD', default='').strip(),
             'HOST': _db_host,
             'PORT': env('DB_PORT'),
             'OPTIONS': {'charset': 'utf8mb4', **_mysql_ssl_options(_db_host)},
