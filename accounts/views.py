@@ -121,8 +121,14 @@ class LandingView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx['lawyer_count'] = LawyerProfile.objects.count()
-        ctx['featured_lawyers'] = LawyerProfile.objects.select_related('user')[:3]
+        # Stay graceful if the database isn't initialised yet (no tables) — the
+        # public page should never 500 just because /setup/ hasn't run.
+        try:
+            ctx['lawyer_count'] = LawyerProfile.objects.count()
+            ctx['featured_lawyers'] = list(LawyerProfile.objects.select_related('user')[:3])
+        except Exception:
+            ctx['lawyer_count'] = 0
+            ctx['featured_lawyers'] = []
         return ctx
 
 

@@ -52,7 +52,7 @@ just hidden in the UI.
 | Forms | `django-crispy-forms` + `crispy-bootstrap5` |
 | Static files | `WhiteNoise` (compressed, hashed, served in-process) |
 | Config | `django-environ` + `dj-database-url` (12-factor, single `DATABASE_URL`) |
-| Hosting | **Vercel** (serverless Python) + an external managed MySQL |
+| Hosting | **Render** (one-blueprint deploy, app + Postgres) — or Vercel + MySQL |
 
 ---
 
@@ -274,12 +274,22 @@ Open **http://127.0.0.1:8800/** — the landing page. Admins sign in at
 
 ---
 
-## ☁️ Deployment (Vercel + managed MySQL)
+## ☁️ Deployment
+
+**Recommended — Render (free, one click):** the repo ships a `render.yaml` blueprint
+that provisions a **free PostgreSQL database and the web service together** and links
+them automatically (no credentials to copy, `SECRET_KEY` auto-generated, migrations run
+at build). Go to **render.com → New → Blueprint → pick this repo → Apply**, then create
+your admin by visiting `/setup/?username=admin&password=YourPass` once.
+
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for both Render and the Vercel + MySQL path. The
+Vercel path is summarised below.
+
+### Vercel + managed MySQL
 
 Vercel runs Python serverlessly with an **ephemeral filesystem**, so production needs an
 **external MySQL** (SQLite can't persist there). The app reads one env var,
-`DATABASE_URL`, so any managed MySQL works (PlanetScale-style hosts, Railway, Aiven,
-TiDB Cloud, filess.io, etc.).
+`DATABASE_URL`, so any managed MySQL works (Railway, Aiven, TiDB Cloud, etc.).
 
 1. **Provision a MySQL database** and copy its connection string:
    ```

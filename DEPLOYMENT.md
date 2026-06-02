@@ -1,9 +1,40 @@
-# Deploying to Vercel (+ managed MySQL)
+# Deploying CaseHarbor
 
-This app is a normal Django project, so it runs anywhere. These notes cover the
-**Vercel** path specifically. Vercel runs Python **serverlessly with an ephemeral
-filesystem**, so you must use an **external managed MySQL** — the app reads a single
-`DATABASE_URL`.
+This app is a normal Django project, so it runs anywhere. The recommended path is
+**Render**, which hosts the app and the database together and wires them up for you —
+no credentials to copy. A **Vercel + managed MySQL** path is documented further down.
+
+---
+
+# Option A — Render (recommended, free, one blueprint)
+
+`render.yaml` in the repo root defines **both** a free PostgreSQL database and the web
+service, and connects them automatically (`DATABASE_URL` is injected, `SECRET_KEY` is
+generated). Migrations run at build time.
+
+### Steps
+1. Push the repo to GitHub (done).
+2. Go to **render.com → New → Blueprint**.
+3. Connect your GitHub and pick the **CaseHarbor** repo → **Apply**.
+4. Render reads `render.yaml`, creates the database + web service, runs the build
+   (install → collectstatic → migrate), and deploys. Wait for **Live**.
+5. Create your admin once, in the browser:
+   ```
+   https://<your-service>.onrender.com/setup/?username=admin&password=YourStrongPass
+   ```
+6. Sign in at `https://<your-service>.onrender.com/staff/login/`.
+
+That's it — no environment variables to type, no database password to copy.
+
+> **Note:** Render's free web service sleeps after ~15 min idle; the first request
+> after that takes ~30–60 s to wake. Normal for the free tier.
+
+---
+
+# Option B — Vercel (+ managed MySQL)
+
+Vercel runs Python **serverlessly with an ephemeral filesystem**, so you must use an
+**external managed MySQL** — the app reads a single `DATABASE_URL`.
 
 ## What's already wired up
 - `vercel.json` — a single `@vercel/python` build that routes all traffic to the
