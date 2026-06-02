@@ -96,40 +96,43 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # --- Database --------------------------------------------------------------
 # Three ways to configure the database, in priority order:
-#   1. DATABASE_URL  — a single connection string (used in production / Vercel),
-#                      e.g. mysql://user:pass@host:3306/legal_cms
+#   1. DATABASE_URL  — a single connection string (one var), e.g.
+#                      mysql://user:pass@host:3306/dbname
 #   2. DB_ENGINE=sqlite  — zero-config local fallback (no server needed)
-#   3. DB_* variables    — explicit MySQL host/user/password (local MySQL)
+#   3. DB_* variables    — explicit MySQL host/user/PASSWORD (raw, no URL encoding;
+#                          use this if your password has special characters)
 DATABASE_URL = env('DATABASE_URL', default='')
+
+
+def _mysql_ssl_options(host):
+    """TLS for MySQL: auto-on for managed (non-local) hosts; override with
+    DB_SSL_REQUIRE / DB_SSL_CA. Returns a dict to merge into OPTIONS."""
+    host = (host or '').lower()
+    is_local = host in ('', 'localhost', '127.0.0.1')
+    if not env.bool('DB_SSL_REQUIRE', default=not is_local):
+        return {}
+    import ssl as _ssl
+
+    ctx = _ssl.create_default_context()
+    ca = env('DB_SSL_CA', default='')
+    if ca:
+        ctx.load_verify_locations(ca)  # verify against the provider's CA
+    else:
+        # Managed providers use a private CA — encrypt without CA verification.
+        ctx.check_hostname = False
+        ctx.verify_mode = _ssl.CERT_NONE
+    return {'ssl': ctx}
+
 
 if DATABASE_URL:
     import dj_database_url
 
     DATABASES = {'default': dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
     _default = DATABASES['default']
-
     if _default.get('ENGINE', '').endswith('mysql'):
         # Rebuild OPTIONS cleanly (drop any stray ?ssl-mode=... query param that
         # dj-database-url leaves behind, which PyMySQL doesn't understand).
-        options = {'charset': 'utf8mb4'}
-        # Managed MySQL (Aiven, etc.) requires TLS. Enable it automatically for
-        # any non-local host, so DATABASE_URL is the only var you must set.
-        host = (_default.get('HOST') or '').lower()
-        is_local = host in ('', 'localhost', '127.0.0.1')
-        if env.bool('DB_SSL_REQUIRE', default=not is_local):
-            import ssl as _ssl
-
-            ssl_ctx = _ssl.create_default_context()
-            ca = env('DB_SSL_CA', default='')
-            if ca:
-                ssl_ctx.load_verify_locations(ca)  # verify against provider CA
-            else:
-                # Managed providers use a private CA. Encrypt the connection but
-                # skip CA verification when no CA file is supplied.
-                ssl_ctx.check_hostname = False
-                ssl_ctx.verify_mode = _ssl.CERT_NONE
-            options['ssl'] = ssl_ctx
-        _default['OPTIONS'] = options
+        _default['OPTIONS'] = {'charset': 'utf8mb4', **_mysql_ssl_options(_default.get('HOST'))}
 elif env('DB_ENGINE') == 'sqlite':
     DATABASES = {
         'default': {
@@ -138,15 +141,16 @@ elif env('DB_ENGINE') == 'sqlite':
         }
     }
 else:
+    _db_host = env('DB_HOST', default='127.0.0.1')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
             'NAME': env('DB_NAME', default='legal_cms'),
             'USER': env('DB_USER', default='root'),
-            'PASSWORD': env('DB_PASSWORD', default=''),
-            'HOST': env('DB_HOST', default='127.0.0.1'),
+            'PASSWORD': env('DB_PASSWORD', default=''),  # raw value — no URL encoding
+            'HOST': _db_host,
             'PORT': env('DB_PORT'),
-            'OPTIONS': {'charset': 'utf8mb4'},
+            'OPTIONS': {'charset': 'utf8mb4', **_mysql_ssl_options(_db_host)},
         }
     }
 
