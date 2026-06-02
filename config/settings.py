@@ -196,6 +196,10 @@ STORAGES = {
     'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedStaticFilesStorage'},
 }
 
+# Index static files via Django's finders at startup too, so styling works even
+# if a build never ran collectstatic (robust for serverless / Vercel).
+WHITENOISE_USE_FINDERS = True
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # --- Production hardening (only when DEBUG is off) --------------------------
