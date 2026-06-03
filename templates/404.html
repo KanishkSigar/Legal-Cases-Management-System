@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Page not found — CaseHarbor{% endblock %}
+{% block content %}
+<div class="text-center py-5">
+  <div class="display-1 fw-bold" style="color:var(--navy)">404</div>
+  <h4 class="mb-2">We couldn't find that page</h4>
+  <p class="text-muted">The link may be broken, or the page may have moved.</p>
+  <a href="{% url 'landing' %}" class="btn btn-dark mt-2">Back to home</a>
+</div>
+{% endblock %}
