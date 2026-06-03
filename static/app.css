@@ -288,3 +288,8 @@ a { text-decoration: none; }
 .k-slate{background:linear-gradient(135deg,#0f1b2d,#3b4a5e)}
 .k-teal{background:linear-gradient(135deg,#16263d,#3a7e63)}
 .k-violet{background:linear-gradient(135deg,#3a2f5b,#7a5fae)}
+
+/* Empty states for list pages */
+.empty-state{text-align:center;padding:3rem 1rem;color:var(--slate)}
+.empty-state i{font-size:2.4rem;color:#c2cbd6;display:block;margin-bottom:.6rem}
+.empty-state p{font-weight:600;color:var(--navy);margin:0 0 .8rem}

@@ -34,7 +34,17 @@
             <td><span class="badge bg-{{ appt.status_badge }}">{{ appt.get_status_display }}</span></td>
           </tr>
         {% empty %}
-          <tr><td colspan="6" class="text-center text-muted py-4">No appointments.</td></tr>
+          <tr><td colspan="6" class="p-0">
+            <div class="empty-state">
+              <i class="bi bi-calendar2-x"></i>
+              <p>No appointments scheduled.</p>
+              {% if user.is_admin or user.is_lawyer %}
+                <a href="{% url 'appointment_add' %}" class="btn btn-sm btn-dark">Schedule one</a>
+              {% else %}
+                <small class="text-muted">Your upcoming appointments will appear here.</small>
+              {% endif %}
+            </div>
+          </td></tr>
         {% endfor %}
       </tbody>
     </table>

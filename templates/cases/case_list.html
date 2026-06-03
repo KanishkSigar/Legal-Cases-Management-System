@@ -51,7 +51,17 @@
             <td>{{ case.opened_date|date:"M d, Y" }}</td>
           </tr>
         {% empty %}
-          <tr><td colspan="7" class="text-center text-muted py-4">No cases found.</td></tr>
+          <tr><td colspan="7" class="p-0">
+            <div class="empty-state">
+              <i class="bi bi-folder2-open"></i>
+              <p>No cases yet.</p>
+              {% if user.is_admin or user.is_lawyer %}
+                <a href="{% url 'case_add' %}" class="btn btn-sm btn-dark">Create the first case</a>
+              {% else %}
+                <small class="text-muted">Cases assigned to you will appear here.</small>
+              {% endif %}
+            </div>
+          </td></tr>
         {% endfor %}
       </tbody>
     </table>
