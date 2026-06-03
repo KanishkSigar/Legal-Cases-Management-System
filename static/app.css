@@ -278,3 +278,13 @@ a { text-decoration: none; }
   .lp-links>a:not(.lp-btn-solid){display:none}
   .lp-trust{gap:1.8rem}
 }
+
+/* Dashboard KPI tiles (match the landing theme) */
+.dash-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1rem}
+.dash-kpi{border-radius:.8rem;padding:1.2rem 1.3rem;color:#fff;box-shadow:0 10px 26px rgba(15,27,45,.12)}
+.dash-kpi .k-num{font-size:2rem;font-weight:800;line-height:1}
+.dash-kpi .k-label{margin-top:.3rem;font-size:.85rem;opacity:.95}
+.k-blue{background:linear-gradient(135deg,#1f3b63,#2d6cdf)}
+.k-slate{background:linear-gradient(135deg,#0f1b2d,#3b4a5e)}
+.k-teal{background:linear-gradient(135deg,#16263d,#3a7e63)}
+.k-violet{background:linear-gradient(135deg,#3a2f5b,#7a5fae)}

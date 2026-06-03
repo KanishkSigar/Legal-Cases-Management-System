@@ -6,28 +6,19 @@
   <span class="badge bg-dark fs-6">{{ user.get_role_display }}</span>
 </div>
 
-<div class="row g-3 mb-4">
-  <div class="col-6 col-md-3">
-    <div class="card text-bg-primary h-100"><div class="card-body">
-      <div class="fs-2 fw-bold">{{ open_case_count }}</div><div>Open cases</div>
-    </div></div>
+<div class="dash-kpis mb-4">
+  <div class="dash-kpi k-blue">
+    <div class="k-num">{{ open_case_count }}</div><div class="k-label"><i class="bi bi-folder2-open"></i> Open cases</div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="card text-bg-secondary h-100"><div class="card-body">
-      <div class="fs-2 fw-bold">{{ case_count }}</div><div>Total cases</div>
-    </div></div>
+  <div class="dash-kpi k-slate">
+    <div class="k-num">{{ case_count }}</div><div class="k-label"><i class="bi bi-collection"></i> Total cases</div>
   </div>
-  <div class="col-6 col-md-3">
-    <div class="card text-bg-info h-100"><div class="card-body">
-      <div class="fs-2 fw-bold">{{ appointment_count }}</div><div>Appointments</div>
-    </div></div>
+  <div class="dash-kpi k-teal">
+    <div class="k-num">{{ appointment_count }}</div><div class="k-label"><i class="bi bi-calendar-event"></i> Appointments</div>
   </div>
   {% if user.is_admin %}
-  <div class="col-6 col-md-3">
-    <div class="card text-bg-dark h-100"><div class="card-body">
-      <div class="fs-2 fw-bold">{{ lawyer_count }} / {{ client_count }}</div>
-      <div>Lawyers / Clients</div>
-    </div></div>
+  <div class="dash-kpi k-violet">
+    <div class="k-num">{{ lawyer_count }} / {{ client_count }}</div><div class="k-label"><i class="bi bi-people"></i> Lawyers / Clients</div>
   </div>
   {% endif %}
 </div>
