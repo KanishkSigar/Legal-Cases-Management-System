@@ -1,103 +1,183 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}CaseHarbor — Case management for modern law firms{% endblock %}
+{% block title %}CaseHarbor — Legal case management software{% endblock %}
 
 {% block body %}
 <div class="lp">
 
-  <!-- Nav -->
-  <header class="lp-nav">
-    <a class="lp-brand" href="#top"><i class="bi bi-bank2"></i> Case<span>Harbor</span></a>
-    <nav class="lp-links">
-      <a href="#features">Features</a>
-      <a href="#roles">Roles</a>
-      <a href="#schema">Database</a>
-      <a href="{% url 'login' %}" class="lp-btn-ghost">Sign in</a>
-      <a href="{% url 'signup' %}" class="lp-btn-solid">Sign up</a>
-    </nav>
-  </header>
-
-  <!-- Hero -->
-  <section class="lp-hero" id="top">
-    <div class="lp-hero-copy">
-      <span class="lp-eyebrow">Legal case management · built on a relational core</span>
-      <h1>Every case, client and hearing —<br>in one source of truth.</h1>
-      <p>CaseHarbor gives your firm a single place to track cases, schedule appointments
-        and manage clients, with role-based access enforced at the database level.</p>
-      <div class="lp-cta">
-        <a href="{% url 'signup' %}" class="lp-btn-primary">Create your account <i class="bi bi-arrow-right"></i></a>
-        <a href="{% url 'login' %}" class="lp-btn-line">Sign in</a>
-      </div>
-      <div class="lp-trust">
-        <div><strong data-count="3">0</strong><span>roles</span></div>
-        <div><strong data-count="5">0</strong><span>core tables</span></div>
-        <div><strong data-count="100">0</strong><span>% query-scoped</span></div>
+  <!-- ============ NAV ============ -->
+  <header class="lp-nav" id="lpNav">
+    <div class="lp-container lp-nav-inner">
+      <a class="lp-logo" href="#top"><span class="lp-logo-mark"><i class="bi bi-bank2"></i></span> Case<span class="g">Harbor</span></a>
+      <nav class="lp-nav-links">
+        <a href="#product">Product</a>
+        <a href="#features">Features</a>
+        <a href="#security">Security</a>
+        <a href="#data">Data model</a>
+      </nav>
+      <div class="lp-nav-cta">
+        <a href="{% url 'login' %}" class="btn-ghost">Sign in</a>
+        <a href="{% url 'signup' %}" class="btn-primary">Get started</a>
       </div>
     </div>
+  </header>
 
-    <!-- Dashboard mockup -->
-    <div class="lp-mock" aria-hidden="true">
-      <div class="mock-win">
-        <div class="mock-bar"><span class="d r"></span><span class="d y"></span><span class="d g"></span>
-          <em>caseharbor.app/dashboard</em></div>
-        <div class="mock-body">
-          <div class="mock-kpis">
-            <div class="kpi kpi-a"><span>Open cases</span><b>24</b></div>
-            <div class="kpi kpi-b"><span>Appointments</span><b>7</b></div>
-            <div class="kpi kpi-c"><span>Clients</span><b>18</b></div>
+  <!-- ============ HERO ============ -->
+  <section class="lp-hero" id="top">
+    <div class="lp-container lp-hero-grid">
+      <div class="lp-hero-copy reveal">
+        <span class="lp-chip"><span class="dot"></span> Built on Django &amp; PostgreSQL</span>
+        <h1>Run your firm's caseload<br>from one source of truth.</h1>
+        <p class="lp-lead">CaseHarbor is legal case-management software that keeps cases,
+          appointments, lawyers and clients in sync — with role-based access enforced at
+          the database layer, not just hidden in the UI.</p>
+        <div class="lp-hero-actions">
+          <a href="{% url 'signup' %}" class="btn-primary lg">Start free <i class="bi bi-arrow-right"></i></a>
+          <a href="#product" class="btn-secondary lg">See how it works</a>
+        </div>
+        <div class="lp-hero-trust">
+          <div><b>3</b> roles</div><span></span>
+          <div><b>5</b> core tables</div><span></span>
+          <div><b>100%</b> query-scoped access</div>
+        </div>
+      </div>
+
+      <div class="lp-hero-visual reveal">
+        <div class="lp-window">
+          <div class="lp-window-bar"><i></i><i></i><i></i><em>caseharbor.app / dashboard</em></div>
+          <div class="lp-window-body">
+            <div class="lp-kpis">
+              <div class="lp-kpi a"><span>Open cases</span><b>24</b></div>
+              <div class="lp-kpi b"><span>Appointments</span><b>7</b></div>
+              <div class="lp-kpi c"><span>Clients</span><b>18</b></div>
+            </div>
+            <div class="lp-tbl">
+              <div class="lp-tr lp-th"><span>Case</span><span>Lawyer</span><span>Status</span></div>
+              <div class="lp-tr"><span><b>CASE-014</b> Johnson v. Acme</span><span>A. Sharma</span><i class="pill blue">In progress</i></div>
+              <div class="lp-tr"><span><b>CASE-013</b> Mehta Estate</span><span>M. Lopez</span><i class="pill green">Won</i></div>
+              <div class="lp-tr"><span><b>CASE-012</b> State v. Rao</span><span>A. Sharma</span><i class="pill amber">Pending</i></div>
+            </div>
           </div>
-          <div class="mock-table">
-            <div class="mt-head"><span>Case</span><span>Lawyer</span><span>Status</span></div>
-            <div class="mt-row"><span><b>CASE-014</b> Johnson v. Acme</span><span>A. Sharma</span><i class="badge b-blue">In Progress</i></div>
-            <div class="mt-row"><span><b>CASE-013</b> Mehta Estate</span><span>M. Lopez</span><i class="badge b-green">Won</i></div>
-            <div class="mt-row"><span><b>CASE-012</b> State v. Rao</span><span>A. Sharma</span><i class="badge b-amber">Pending</i></div>
-            <div class="mt-row"><span><b>CASE-011</b> Patel Contract</span><span>R. Iyer</span><i class="badge b-gray">Closed</i></div>
-          </div>
-          <div class="mock-appt"><i class="bi bi-calendar-event"></i> Next hearing · <b>Jun 12, 10:30</b> · Room A</div>
+        </div>
+        <div class="lp-float">
+          <span class="lp-float-ic"><i class="bi bi-calendar-event"></i></span>
+          <div><b>Next hearing</b><small>Jun 12 · 10:30 · Room A</small></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Features -->
-  <section class="lp-section" id="features">
-    <h2 class="lp-h2">Everything a firm tracks, in one place</h2>
-    <p class="lp-sub">A real workflow tool — not just a database admin screen.</p>
-    <div class="lp-grid">
-      <div class="lp-card"><div class="lp-ic"><i class="bi bi-folder2-open"></i></div>
-        <h3>Case management</h3><p>Case numbers, types, a status workflow (Open → Won/Lost), assigned lawyer, linked client and a notes timeline.</p></div>
-      <div class="lp-card"><div class="lp-ic"><i class="bi bi-calendar2-check"></i></div>
-        <h3>Appointments</h3><p>Schedule lawyer–client meetings, optionally tied to a case, with one-click complete / cancel.</p></div>
-      <div class="lp-card"><div class="lp-ic"><i class="bi bi-people"></i></div>
-        <h3>Lawyers &amp; clients</h3><p>Full profiles — specialisation, bar number, company, contact — each backed by a secure login.</p></div>
-      <div class="lp-card"><div class="lp-ic"><i class="bi bi-shield-lock"></i></div>
-        <h3>Role-based access</h3><p>Admins see all, lawyers see their cases, clients see their own — scoped in SQL, not just hidden in the UI.</p></div>
+  <!-- ============ LOGO / STAT STRIP ============ -->
+  <div class="lp-strip">
+    <div class="lp-container lp-strip-inner">
+      <span>Everything a modern practice tracks</span>
+      <div class="lp-strip-items">
+        <span><i class="bi bi-folder2-open"></i> Cases</span>
+        <span><i class="bi bi-calendar2-check"></i> Appointments</span>
+        <span><i class="bi bi-people"></i> Clients &amp; lawyers</span>
+        <span><i class="bi bi-shield-lock"></i> Role-based access</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ PRODUCT / FEATURE ROWS ============ -->
+  <section class="lp-section" id="product">
+    <div class="lp-container">
+      <div class="lp-section-head reveal">
+        <span class="lp-eyebrow">Product</span>
+        <h2>A real workflow tool — not a database admin screen</h2>
+        <p>Each role gets a focused view of exactly the work that's theirs.</p>
+      </div>
+
+      <div class="lp-row reveal" id="features">
+        <div class="lp-row-text">
+          <span class="lp-row-ic"><i class="bi bi-folder2-open"></i></span>
+          <h3>Case management that keeps up</h3>
+          <p>Track every matter end to end — case number, type, and a clear status
+            workflow from Open through Won or Lost.</p>
+          <ul class="lp-check">
+            <li>Assigned lawyer &amp; linked client on every case</li>
+            <li>A notes timeline for hearings and updates</li>
+            <li>Filter and search across your whole caseload</li>
+          </ul>
+        </div>
+        <div class="lp-row-visual">
+          <div class="lp-card-ui">
+            <div class="lp-ui-head">Cases <span class="pill blue">In progress</span></div>
+            <div class="lp-ui-line"><b>CASE-014</b> Johnson v. Acme <i class="pill blue">In progress</i></div>
+            <div class="lp-ui-line"><b>CASE-013</b> Mehta Estate <i class="pill green">Won</i></div>
+            <div class="lp-ui-line"><b>CASE-012</b> State v. Rao <i class="pill amber">Pending</i></div>
+            <div class="lp-ui-line muted"><b>CASE-011</b> Patel Contract <i class="pill gray">Closed</i></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lp-row reverse reveal">
+        <div class="lp-row-text">
+          <span class="lp-row-ic"><i class="bi bi-calendar2-check"></i></span>
+          <h3>Appointments, scheduled in seconds</h3>
+          <p>Book meetings between a lawyer and a client, optionally tied to a case, and
+            move them through their lifecycle with one click.</p>
+          <ul class="lp-check">
+            <li>Upcoming-first list with status at a glance</li>
+            <li>One-click complete or cancel</li>
+            <li>Linked to the relevant case for context</li>
+          </ul>
+        </div>
+        <div class="lp-row-visual">
+          <div class="lp-card-ui">
+            <div class="lp-ui-head">Upcoming</div>
+            <div class="lp-ui-appt"><span class="lp-ui-ic"><i class="bi bi-calendar-event"></i></span>
+              <div><b>Initial consultation</b><small>Jun 12, 10:30 · R. Mehta · A. Sharma</small></div>
+              <i class="pill blue">Scheduled</i></div>
+            <div class="lp-ui-appt"><span class="lp-ui-ic"><i class="bi bi-calendar-event"></i></span>
+              <div><b>Document review</b><small>Jun 15, 14:00 · S. Williams · M. Lopez</small></div>
+              <i class="pill green">Done</i></div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Roles -->
-  <section class="lp-section lp-roles" id="roles">
-    <h2 class="lp-h2">Built for every role</h2>
-    <p class="lp-sub">One system, three tailored experiences.</p>
-    <div class="lp-rolegrid">
-      <div class="role"><div class="role-top role-admin"><i class="bi bi-gem"></i> Admin</div>
-        <p>Full control: manage lawyers, clients, every case and appointment, plus the admin console.</p></div>
-      <div class="role"><div class="role-top role-lawyer"><i class="bi bi-briefcase"></i> Lawyer</div>
-        <p>See and update only your assigned cases, add notes, and manage your own appointments.</p></div>
-      <div class="role"><div class="role-top role-client"><i class="bi bi-person-badge"></i> Client</div>
-        <p>Sign up in seconds and follow your own cases and upcoming appointments — read-only and private.</p></div>
-    </div>
-    <div class="lp-rolecta">
-      <a href="{% url 'signup' %}" class="lp-btn-primary">Sign up as a client <i class="bi bi-arrow-right"></i></a>
+  <!-- ============ ROLES ============ -->
+  <section class="lp-section lp-soft">
+    <div class="lp-container">
+      <div class="lp-section-head reveal">
+        <span class="lp-eyebrow">Access</span>
+        <h2>Built for every role</h2>
+        <p>One system, three tailored experiences — separated all the way down to the query.</p>
+      </div>
+      <div class="lp-roles">
+        <div class="lp-role reveal">
+          <div class="lp-role-ic admin"><i class="bi bi-gem"></i></div>
+          <h3>Admin</h3>
+          <p>Full control of lawyers, clients, cases and appointments, plus the admin console.</p>
+        </div>
+        <div class="lp-role reveal">
+          <div class="lp-role-ic lawyer"><i class="bi bi-briefcase"></i></div>
+          <h3>Lawyer</h3>
+          <p>See and update only assigned cases, add notes, and manage your own schedule.</p>
+        </div>
+        <div class="lp-role reveal">
+          <div class="lp-role-ic client"><i class="bi bi-person-badge"></i></div>
+          <h3>Client</h3>
+          <p>Sign up in seconds and privately follow your own cases and appointments.</p>
+        </div>
+      </div>
     </div>
   </section>
 
-  <!-- Schema -->
-  <section class="lp-section lp-dark" id="schema">
-    <h2 class="lp-h2">Built around a relational core</h2>
-    <p class="lp-sub">Five well-normalised tables. Foreign keys keep records consistent; a <code>for_user()</code> manager scopes rows by role in SQL.</p>
-    <div class="lp-schema">
-      <pre class="lp-er">
+  <!-- ============ SECURITY / DATA ============ -->
+  <section class="lp-section lp-dark" id="security">
+    <div class="lp-container">
+      <div class="lp-section-head reveal">
+        <span class="lp-eyebrow gold">Security &amp; data</span>
+        <h2>Access control that lives in the database</h2>
+        <p>Five normalised tables, joined by foreign keys, with a <code>for_user()</code>
+          manager that scopes every query by role.</p>
+      </div>
+      <div class="lp-data" id="data">
+        <pre class="lp-er reveal">
  ┌──────────────┐      ┌───────────────┐      ┌──────────────┐
  │     User     │ 1  1 │ LawyerProfile │ 1  * │     Case     │
  │  role, phone ├──────┤  specialism   ├──────┤ case_number  │
@@ -112,43 +192,83 @@
                        │  Appointment  │      └───────────────┘
                        │ scheduled_for │
                        └───────────────┘</pre>
-      <ul class="lp-points">
-        <li><b>Custom User + role</b> — one auth table drives every permission.</li>
-        <li><b>Profiles via 1-to-1</b> — domain data kept out of auth.</li>
-        <li><b>PROTECT foreign keys</b> — no orphaned legal records.</li>
-        <li><b>Query-level scoping</b> — a client can't load another client's case.</li>
-      </ul>
+        <ul class="lp-data-points reveal">
+          <li><b>Custom user + role</b><span>One auth table drives every permission decision.</span></li>
+          <li><b>Profiles via 1-to-1</b><span>Domain data kept cleanly out of auth.</span></li>
+          <li><b>PROTECT foreign keys</b><span>No orphaned legal records, ever.</span></li>
+          <li><b>Query-level scoping</b><span>A client can't load another client's case.</span></li>
+        </ul>
+      </div>
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="lp-band">
-    <h2>Start tracking your cases today</h2>
-    <p>Free to try. Create a client account in under a minute.</p>
-    <div class="lp-cta center">
-      <a href="{% url 'signup' %}" class="lp-btn-primary lg">Get started <i class="bi bi-arrow-right"></i></a>
-      <a href="{% url 'login' %}" class="lp-btn-line lg">Sign in</a>
+  <!-- ============ CTA ============ -->
+  <section class="lp-cta-band">
+    <div class="lp-container lp-cta-inner reveal">
+      <h2>Start managing your cases today</h2>
+      <p>Create a free client account in under a minute — no setup required.</p>
+      <div class="lp-hero-actions center">
+        <a href="{% url 'signup' %}" class="btn-primary lg">Get started <i class="bi bi-arrow-right"></i></a>
+        <a href="{% url 'login' %}" class="btn-secondary lg onlight">Sign in</a>
+      </div>
     </div>
   </section>
 
-  <footer class="lp-foot">
-    <span>© <span id="yr"></span> CaseHarbor</span>
-    <span class="lp-foot-links">
-      <a href="https://github.com/KanishkSigar/CaseHarbor" target="_blank" rel="noopener">GitHub</a>
-      <a href="{% url 'admin_login' %}" class="muted">Staff portal</a>
-    </span>
+  <!-- ============ FOOTER ============ -->
+  <footer class="lp-footer">
+    <div class="lp-container">
+      <div class="lp-footer-grid">
+        <div class="lp-footer-brand">
+          <a class="lp-logo" href="#top"><span class="lp-logo-mark"><i class="bi bi-bank2"></i></span> Case<span class="g">Harbor</span></a>
+          <p>Legal case-management software for modern practices. Cases, appointments and
+            clients, in one secure place.</p>
+          <div class="lp-social">
+            <a href="https://github.com/KanishkSigar/CaseHarbor" target="_blank" rel="noopener" aria-label="GitHub"><i class="bi bi-github"></i></a>
+            <a href="https://www.linkedin.com/in/kanishk-sigar" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://kanishksigar.me" target="_blank" rel="noopener" aria-label="Portfolio"><i class="bi bi-globe"></i></a>
+          </div>
+        </div>
+        <div class="lp-footer-col">
+          <h4>Product</h4>
+          <a href="#features">Features</a>
+          <a href="#security">Security</a>
+          <a href="{% url 'signup' %}">Sign up</a>
+          <a href="{% url 'login' %}">Sign in</a>
+        </div>
+        <div class="lp-footer-col">
+          <h4>Project</h4>
+          <a href="https://github.com/KanishkSigar/CaseHarbor" target="_blank" rel="noopener">GitHub repo</a>
+          <a href="https://github.com/KanishkSigar/CaseHarbor#readme" target="_blank" rel="noopener">Documentation</a>
+          <a href="https://kanishksigar.me/CaseHarbor/" target="_blank" rel="noopener">Overview</a>
+        </div>
+        <div class="lp-footer-col">
+          <h4>Legal</h4>
+          <a href="https://github.com/KanishkSigar/CaseHarbor/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a>
+          <a href="{% url 'admin_login' %}">Staff portal</a>
+        </div>
+      </div>
+      <div class="lp-footer-bottom">
+        <span>© <span id="yr"></span> CaseHarbor · A project by Kanishk Sigar</span>
+        <span>Django · PostgreSQL · Deployed on Render</span>
+      </div>
+    </div>
   </footer>
 </div>
 
 <script>
   document.getElementById('yr').textContent = new Date().getFullYear();
-  const io = new IntersectionObserver((es) => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    const el = e.target, t = +el.dataset.count; let n = 0;
-    const step = Math.max(1, Math.ceil(t / 28));
-    const iv = setInterval(() => { n += step; if (n >= t) { n = t; clearInterval(iv); } el.textContent = n; }, 28);
-    io.unobserve(el);
-  }, { threshold: .6 });
-  document.querySelectorAll('[data-count]').forEach(el => io.observe(el));
+
+  // Nav shadow on scroll
+  const nav = document.getElementById('lpNav');
+  const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
+  onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Staggered scroll-reveal
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) { e.target.style.transitionDelay = (i % 3 * 70) + 'ms'; e.target.classList.add('in'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.14 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 </script>
 {% endblock %}
