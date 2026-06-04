@@ -20,7 +20,8 @@ from appointments.models import Appointment
 from cases.models import Case
 
 from .forms import (
-    ClientForm, ClientProfileEditForm, LawyerForm, LawyerProfileEditForm, SignUpForm,
+    ClientForm, ClientProfileEditForm, LawyerForm, LawyerProfileEditForm,
+    PortalAuthForm, SignUpForm,
 )
 from .mixins import AdminRequiredMixin
 from .models import ClientProfile, LawyerProfile
@@ -157,6 +158,7 @@ class PortalLoginView(LoginView):
     """Client / lawyer sign-in. Admins are redirected to the staff portal."""
 
     template_name = 'accounts/login_portal.html'
+    authentication_form = PortalAuthForm
     redirect_authenticated_user = True
 
     def form_valid(self, form):

@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 
 from .models import ClientProfile, LawyerProfile, User
 
@@ -27,34 +27,54 @@ class _PersonForm(UserCreationForm):
 
 
 class SignUpForm(UserCreationForm):
-    """Public self-registration. Always creates a CLIENT account — the role is
-    fixed server-side so it can never be escalated from form input."""
+    """Public self-registration. No username field — the email is the login
+    identifier. Always creates a CLIENT account (role fixed server-side)."""
 
     first_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'placeholder': 'First name'}))
     last_name = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'placeholder': 'Last name (optional)'}))
-    email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'you@example.com'}))
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={'placeholder': 'you@example.com'}),
+        help_text="You'll use this email to sign in.",
+    )
 
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('first_name', 'last_name', 'email', 'username')
+        fields = ('first_name', 'last_name', 'email')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Strip Django's verbose help text and tidy labels for a clean form.
-        for name in ('username', 'password1', 'password2'):
+        for name in ('password1', 'password2'):
             self.fields[name].help_text = ''
-        self.fields['username'].widget.attrs['placeholder'] = 'Choose a username'
         self.fields['password1'].label = 'Password'
         self.fields['password1'].widget.attrs['placeholder'] = 'At least 6 characters'
         self.fields['password2'].label = 'Confirm password'
 
+    def clean_email(self):
+        email = self.cleaned_data['email']
+        if User.objects.filter(username__iexact=email).exists() \
+                or User.objects.filter(email__iexact=email).exists():
+            raise forms.ValidationError('An account with this email already exists.')
+        return email
+
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.username = self.cleaned_data['email']  # email is the login identifier
         user.role = User.Role.CLIENT  # never trust a role from the request
         if commit:
             user.save()
             ClientProfile.objects.get_or_create(user=user)
         return user
+
+
+class PortalAuthForm(AuthenticationForm):
+    """Login form for the client/lawyer portal — accepts an email or a username
+    (new clients sign in with their email; admin-created lawyers use a username)."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['username'].label = 'Email or username'
+        self.fields['username'].widget.attrs['placeholder'] = 'Email or username'
 
 
 class LawyerForm(_PersonForm):
