@@ -9,6 +9,10 @@
 </div>
 
 <form method="get" class="row g-2 mb-3">
+  <div class="col-12 col-md">
+    <input type="search" name="q" value="{{ q }}" class="form-control form-control-sm"
+           placeholder="Search case #, title or client…">
+  </div>
   <div class="col-auto">
     <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
       <option value="">All statuses</option>
@@ -25,7 +29,17 @@
       {% endfor %}
     </select>
   </div>
-  {% if current_status or current_type %}
+  <div class="col-auto">
+    <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()">
+      <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest first</option>
+      <option value="oldest" {% if current_sort == 'oldest' %}selected{% endif %}>Oldest first</option>
+      <option value="number" {% if current_sort == 'number' %}selected{% endif %}>Case #</option>
+      <option value="title" {% if current_sort == 'title' %}selected{% endif %}>Title</option>
+      <option value="status" {% if current_sort == 'status' %}selected{% endif %}>Status</option>
+    </select>
+  </div>
+  <div class="col-auto"><button class="btn btn-sm btn-dark" type="submit"><i class="bi bi-search"></i></button></div>
+  {% if current_status or current_type or q %}
     <div class="col-auto"><a href="{% url 'case_list' %}" class="btn btn-sm btn-outline-secondary">Clear</a></div>
   {% endif %}
 </form>

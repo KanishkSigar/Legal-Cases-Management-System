@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -23,14 +24,24 @@ class AppointmentListView(LoginRequiredMixin, ListView):
             'lawyer__user', 'client__user', 'case',
         )
         status = self.request.GET.get('status')
+        q = self.request.GET.get('q', '').strip()
         if status:
             qs = qs.filter(status=status)
+        if q:
+            qs = qs.filter(
+                Q(title__icontains=q)
+                | Q(client__user__first_name__icontains=q)
+                | Q(client__user__last_name__icontains=q)
+                | Q(lawyer__user__first_name__icontains=q)
+                | Q(lawyer__user__last_name__icontains=q)
+            )
         return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx['statuses'] = Appointment.Status.choices
         ctx['current_status'] = self.request.GET.get('status', '')
+        ctx['q'] = self.request.GET.get('q', '')
         return ctx
 
 

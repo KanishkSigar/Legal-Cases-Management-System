@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
+from django.db.models import Q
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import (
@@ -19,17 +20,29 @@ class CaseListView(LoginRequiredMixin, ListView):
     context_object_name = 'cases'
     paginate_by = 15
 
+    SORTS = {
+        'newest': '-opened_date', 'oldest': 'opened_date',
+        'number': 'case_number', 'title': 'title', 'status': 'status',
+    }
+
     def get_queryset(self):
         qs = Case.objects.for_user(self.request.user).select_related(
             'client__user', 'lawyer__user',
         )
         status = self.request.GET.get('status')
         case_type = self.request.GET.get('type')
+        q = self.request.GET.get('q', '').strip()
         if status:
             qs = qs.filter(status=status)
         if case_type:
             qs = qs.filter(case_type=case_type)
-        return qs
+        if q:
+            qs = qs.filter(
+                Q(case_number__icontains=q) | Q(title__icontains=q)
+                | Q(client__user__first_name__icontains=q)
+                | Q(client__user__last_name__icontains=q)
+            )
+        return qs.order_by(self.SORTS.get(self.request.GET.get('sort'), '-opened_date'))
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -37,6 +50,8 @@ class CaseListView(LoginRequiredMixin, ListView):
         ctx['types'] = Case.Type.choices
         ctx['current_status'] = self.request.GET.get('status', '')
         ctx['current_type'] = self.request.GET.get('type', '')
+        ctx['q'] = self.request.GET.get('q', '')
+        ctx['current_sort'] = self.request.GET.get('sort', 'newest')
         return ctx
 
 
