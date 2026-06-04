@@ -339,9 +339,12 @@ a { text-decoration: none; }
 .lp-footer-col a:hover{color:#fff}
 .lp-footer-bottom{display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap;padding-top:1.6rem;color:#6f7f90;font-size:.85rem}
 
-/* Scroll reveal */
-.reveal{opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
-.reveal.in{opacity:1;transform:none}
+/* Scroll reveal — visible by default; hidden-initial only after JS adds .reveal-on,
+   so content never disappears if JS fails or an observer misses it. */
+.reveal{opacity:1;transform:none}
+.lp.reveal-on .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s var(--ease),transform .6s var(--ease)}
+.lp.reveal-on .reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.lp.reveal-on .reveal{opacity:1;transform:none;transition:none}}
 
 /* Responsive */
 @media (max-width:960px){

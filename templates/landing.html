@@ -263,12 +263,20 @@
   const onScroll = () => nav.classList.toggle('scrolled', window.scrollY > 8);
   onScroll(); window.addEventListener('scroll', onScroll, { passive: true });
 
-  // Staggered scroll-reveal
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
-      if (e.isIntersecting) { e.target.style.transitionDelay = (i % 3 * 70) + 'ms'; e.target.classList.add('in'); obs.unobserve(e.target); }
-    });
-  }, { threshold: 0.14 });
-  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+  // Staggered scroll-reveal — only enable the hidden-initial state once JS runs,
+  // and guarantee everything becomes visible with a safety-net timeout.
+  const lp = document.querySelector('.lp');
+  const reveals = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window && reveals.length) {
+    lp.classList.add('reveal-on');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) { e.target.style.transitionDelay = (i % 3 * 70) + 'ms'; e.target.classList.add('in'); obs.unobserve(e.target); }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    reveals.forEach(el => obs.observe(el));
+    // Fallback: reveal anything still hidden after 2.5s (e.g. observer missed it).
+    setTimeout(() => reveals.forEach(el => el.classList.add('in')), 2500);
+  }
 </script>
 {% endblock %}
