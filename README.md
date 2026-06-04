@@ -1,5 +1,6 @@
 # ⚖️ CaseHarbor — Legal Cases Management System
 
+[![CI](https://github.com/KanishkSigar/CaseHarbor/actions/workflows/ci.yml/badge.svg)](https://github.com/KanishkSigar/CaseHarbor/actions/workflows/ci.yml)
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-caseharbor.onrender.com-2ea44f?style=flat&logo=render)](https://caseharbor.onrender.com)
 [![Python](https://img.shields.io/badge/Python-3.12+-3776AB?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-5%2F6-092E20?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
