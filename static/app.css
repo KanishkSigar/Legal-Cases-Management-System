@@ -203,9 +203,9 @@ a { text-decoration: none; }
 
 /* Nav */
 .lp-nav{position:fixed;inset:0 0 auto 0;z-index:100;height:68px;display:flex;align-items:center;
-  background:rgba(255,255,255,.8);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid transparent;transition:border-color .3s var(--ease),box-shadow .3s var(--ease),background .3s var(--ease)}
-.lp-nav.scrolled{border-bottom-color:var(--line);box-shadow:0 4px 24px rgba(15,27,45,.06)}
+  background:rgba(255,255,255,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  transition:background .3s var(--ease)}
+.lp-nav.scrolled{background:rgba(255,255,255,.92)}
 .lp-nav-inner{display:flex;align-items:center;justify-content:space-between;width:100%}
 .lp-logo{display:inline-flex;align-items:center;gap:.5rem;font-weight:800;font-size:1.18rem;color:var(--na)}
 .lp-logo .g{color:var(--gold)}
