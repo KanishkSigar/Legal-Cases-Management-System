@@ -31,12 +31,22 @@ class SignUpForm(UserCreationForm):
     fixed server-side so it can never be escalated from form input."""
 
     first_name = forms.CharField(max_length=150, widget=forms.TextInput(attrs={'placeholder': 'First name'}))
-    last_name = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'placeholder': 'Last name'}))
+    last_name = forms.CharField(max_length=150, required=False, widget=forms.TextInput(attrs={'placeholder': 'Last name (optional)'}))
     email = forms.EmailField(widget=forms.EmailInput(attrs={'placeholder': 'you@example.com'}))
 
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ('first_name', 'last_name', 'email', 'username')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Strip Django's verbose help text and tidy labels for a clean form.
+        for name in ('username', 'password1', 'password2'):
+            self.fields[name].help_text = ''
+        self.fields['username'].widget.attrs['placeholder'] = 'Choose a username'
+        self.fields['password1'].label = 'Password'
+        self.fields['password1'].widget.attrs['placeholder'] = 'At least 6 characters'
+        self.fields['password2'].label = 'Confirm password'
 
     def save(self, commit=True):
         user = super().save(commit=False)
