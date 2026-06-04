@@ -1,3 +1,5 @@
+html { scroll-behavior: smooth; }
+
 /* ============================================================
    Legal CMS — theme & landing styles
    Palette: deep navy + gold accent, clean and professional.
@@ -313,12 +315,15 @@ a { text-decoration: none; }
 /* Dark data section */
 .lp-dark{background:var(--na);color:#dfe6ef}
 .lp-dark code{background:rgba(0,0,0,.3);color:#ffd98a;padding:.05rem .35rem;border-radius:.25rem}
-.lp-data{display:grid;grid-template-columns:1.15fr .85fr;gap:2.4rem;align-items:center}
-.lp-er{background:#0a1320;color:#8fe3b0;border:1px solid #24334a;border-radius:var(--r);padding:1.3rem;font-size:.72rem;line-height:1.35;overflow-x:auto;box-shadow:var(--shadow-lg)}
-.lp-data-points{list-style:none;padding:0;margin:0;display:grid;gap:1rem}
-.lp-data-points li{background:var(--na2);border:1px solid #24334a;border-radius:13px;padding:1rem 1.15rem}
-.lp-data-points b{display:block;color:var(--gold-soft);margin-bottom:.15rem}
+.lp-section-head.center{margin-left:auto;margin-right:auto;text-align:center}
+.lp-data-points{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.lp-data-points li{background:var(--na2);border:1px solid #24334a;border-radius:13px;padding:1.2rem 1.25rem}
+.lp-data-points b{display:block;color:var(--gold-soft);margin-bottom:.2rem}
 .lp-data-points span{color:#aebfd2;font-size:.92rem}
+/* Data-model section (light, contrasts with the dark Security section above it) */
+.lp-datasec{background:var(--soft);border-top:1px solid var(--line)}
+.lp-datasec .lp-er{max-width:760px;margin:0 auto}
+.lp-er{background:#0a1320;color:#8fe3b0;border:1px solid #24334a;border-radius:var(--r);padding:1.3rem;font-size:.72rem;line-height:1.35;overflow-x:auto;box-shadow:var(--shadow-lg)}
 
 /* CTA band */
 .lp-cta-band{background:linear-gradient(120deg,var(--na),var(--na2));color:#fff;padding:clamp(3.5rem,7vw,6rem) 0}

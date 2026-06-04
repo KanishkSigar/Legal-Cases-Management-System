@@ -11,7 +11,7 @@
       <a class="lp-logo" href="#top"><span class="lp-logo-mark"><i class="bi bi-bank2"></i></span> Case<span class="g">Harbor</span></a>
       <nav class="lp-nav-links">
         <a href="#product">Product</a>
-        <a href="#features">Features</a>
+        <a href="#roles">Roles</a>
         <a href="#security">Security</a>
         <a href="#data">Data model</a>
       </nav>
@@ -140,7 +140,7 @@
   </section>
 
   <!-- ============ ROLES ============ -->
-  <section class="lp-section lp-soft">
+  <section class="lp-section lp-soft" id="roles">
     <div class="lp-container">
       <div class="lp-section-head reveal">
         <span class="lp-eyebrow">Access</span>
@@ -167,17 +167,34 @@
     </div>
   </section>
 
-  <!-- ============ SECURITY / DATA ============ -->
+  <!-- ============ SECURITY ============ -->
   <section class="lp-section lp-dark" id="security">
     <div class="lp-container">
       <div class="lp-section-head reveal">
-        <span class="lp-eyebrow gold">Security &amp; data</span>
+        <span class="lp-eyebrow gold">Security</span>
         <h2>Access control that lives in the database</h2>
-        <p>Five normalised tables, joined by foreign keys, with a <code>for_user()</code>
-          manager that scopes every query by role.</p>
+        <p>Permissions aren't bolted on in the UI — a <code>for_user()</code> manager
+          scopes every query by role, so users only ever load what's theirs.</p>
       </div>
-      <div class="lp-data" id="data">
-        <pre class="lp-er reveal">
+      <ul class="lp-data-points reveal">
+        <li><b>Custom user + role</b><span>One auth table drives every permission decision.</span></li>
+        <li><b>Profiles via 1-to-1</b><span>Domain data kept cleanly out of auth.</span></li>
+        <li><b>PROTECT foreign keys</b><span>No orphaned legal records, ever.</span></li>
+        <li><b>Query-level scoping</b><span>A client can't load another client's case.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ DATA MODEL ============ -->
+  <section class="lp-section lp-datasec" id="data">
+    <div class="lp-container">
+      <div class="lp-section-head center reveal">
+        <span class="lp-eyebrow">Data model</span>
+        <h2>Five normalised tables, joined by design</h2>
+        <p>The whole practice maps to a handful of related tables — foreign keys keep
+          every record consistent.</p>
+      </div>
+      <pre class="lp-er reveal">
  ┌──────────────┐      ┌───────────────┐      ┌──────────────┐
  │     User     │ 1  1 │ LawyerProfile │ 1  * │     Case     │
  │  role, phone ├──────┤  specialism   ├──────┤ case_number  │
@@ -192,13 +209,6 @@
                        │  Appointment  │      └───────────────┘
                        │ scheduled_for │
                        └───────────────┘</pre>
-        <ul class="lp-data-points reveal">
-          <li><b>Custom user + role</b><span>One auth table drives every permission decision.</span></li>
-          <li><b>Profiles via 1-to-1</b><span>Domain data kept cleanly out of auth.</span></li>
-          <li><b>PROTECT foreign keys</b><span>No orphaned legal records, ever.</span></li>
-          <li><b>Query-level scoping</b><span>A client can't load another client's case.</span></li>
-        </ul>
-      </div>
     </div>
   </section>
 
