@@ -67,6 +67,15 @@ class SignUpForm(UserCreationForm):
         return user
 
 
+class AccountForm(forms.ModelForm):
+    """Self-service edit of basic account details (used by admins, who have no
+    profile; clients/lawyers use their richer profile forms)."""
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'phone')
+
+
 class PortalAuthForm(AuthenticationForm):
     """Login form for the client/lawyer portal — accepts an email or a username
     (new clients sign in with their email; admin-created lawyers use a username)."""

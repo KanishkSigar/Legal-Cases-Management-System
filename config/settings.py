@@ -181,6 +181,20 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'landing'
 
+# --- Email -----------------------------------------------------------------
+# Password-reset emails. Without SMTP configured we print to the console (dev) —
+# set EMAIL_HOST/USER/PASSWORD env vars to send real mail in production.
+DEFAULT_FROM_EMAIL = env('DEFAULT_FROM_EMAIL', default='CaseHarbor <no-reply@caseharbor.app>')
+EMAIL_HOST = env('EMAIL_HOST', default='')
+if EMAIL_HOST:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_PORT = env.int('EMAIL_PORT', default=587)
+    EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='')
+    EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='')
+    EMAIL_USE_TLS = env.bool('EMAIL_USE_TLS', default=True)
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 # Keep sign-up simple: just require a minimum length (no "too similar / too
 # common / all-numeric" rules that frustrate users on a demo app).
 AUTH_PASSWORD_VALIDATORS = [

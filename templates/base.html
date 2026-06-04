@@ -44,6 +44,8 @@
             <span class="badge bg-secondary">{{ user.get_role_display }}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person-gear"></i> My profile</a></li>
+            <li><hr class="dropdown-divider"></li>
             <li>
               <form method="post" action="{% url 'logout' %}" class="px-2">
                 {% csrf_token %}

@@ -20,8 +20,8 @@ from appointments.models import Appointment
 from cases.models import Case
 
 from .forms import (
-    ClientForm, ClientProfileEditForm, LawyerForm, LawyerProfileEditForm,
-    PortalAuthForm, SignUpForm,
+    AccountForm, ClientForm, ClientProfileEditForm, LawyerForm,
+    LawyerProfileEditForm, PortalAuthForm, SignUpForm,
 )
 from .mixins import AdminRequiredMixin
 from .models import ClientProfile, LawyerProfile
@@ -209,6 +209,33 @@ class DashboardView(LoginRequiredMixin, TemplateView):
             ctx['lawyer_count'] = LawyerProfile.objects.count()
             ctx['client_count'] = ClientProfile.objects.count()
         return ctx
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    """Self-service 'My profile' — edit your own details. Clients and lawyers
+    edit their profile (incl. role-specific fields); admins edit basic account
+    details. Password changes happen via the separate change-password flow."""
+
+    template_name = 'accounts/profile.html'
+
+    def _form(self, data=None):
+        user = self.request.user
+        if user.is_lawyer and hasattr(user, 'lawyer_profile'):
+            return LawyerProfileEditForm(data, instance=user.lawyer_profile)
+        if user.is_client and hasattr(user, 'client_profile'):
+            return ClientProfileEditForm(data, instance=user.client_profile)
+        return AccountForm(data, instance=user)
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response(self.get_context_data(form=self._form()))
+
+    def post(self, request, *args, **kwargs):
+        form = self._form(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your profile has been updated.')
+            return redirect('profile')
+        return self.render_to_response(self.get_context_data(form=form))
 
 
 class LawyerDirectoryView(LoginRequiredMixin, ListView):
