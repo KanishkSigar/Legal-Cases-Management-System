@@ -354,3 +354,9 @@ render.yaml     # Render blueprint (web service + Postgres)
 ## 🧭 Roadmap / out of scope (next iterations)
 Document uploads per case (needs cloud storage) · billing & invoicing · email/SMS
 appointment reminders · a calendar view · client-initiated appointment requests.
+
+---
+
+## 🤝 Acknowledgments
+Developed with the assistance of AI-powered coding tools (Claude Code) for parts of
+the implementation and documentation.
